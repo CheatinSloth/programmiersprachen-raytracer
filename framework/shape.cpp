@@ -43,5 +43,18 @@ Box::Box(glm::vec3 min, glm::vec3 max)
 
 float Box::area()
 {
-	return (0.0f);
+	float h = sqrt(pow(max_.y - min_.y, 2.0f));
+	float w = sqrt(pow(max_.x - min_.x, 2.0f));
+	float l = sqrt(pow(max_.z - min_.z, 2.0f));
+
+	return (2*h*l) + (2*h*w) + (2*w*l);
+}
+
+float Box::volume()
+{
+	float h = sqrt(pow(max_.y - min_.y, 2.0f));
+	float w = sqrt(pow(max_.x - min_.x, 2.0f));
+	float l = sqrt(pow(max_.z - min_.z, 2.0f));
+
+	return h*w*l;
 }
