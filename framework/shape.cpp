@@ -1,22 +1,31 @@
 #include "shape.hpp"
+using std::string;
+using glm::vec3;
 
-Sphere::Sphere()
-{
-	center_ = glm::vec3{0.0f, 0.0f, 0.0f};
-	radius_ = 1.0f;
-}
+Sphere::Sphere() :
+	center_{0.0f, 0.0f, 0.0f},
+	radius_{ 1.0f }, 
+	color_{1.0f, 1.0f, 1.0f} {}
 
-Sphere::Sphere(glm::vec3 center)
-{
-	center_ = center;
-	radius_ = 1.0f;
-}
+Sphere::Sphere(vec3 center) :
+	center_{ center },
+	radius_{1.0f} {}
 
-Sphere::Sphere(glm::vec3 center, float radius)
-{
-	center_ = center;
-	radius_ = radius;
-}
+
+Sphere::Sphere(vec3 center, float radius) :
+	center_{ center },
+	radius_{radius} {}
+
+
+Sphere::Sphere(vec3 center, float radius, Color color) :
+	center_{center},
+	radius_{ radius } {}
+
+Sphere::Sphere(vec3 center, float radius, Color color, string name) :
+	center_{ center },
+	radius_{ radius },
+	color_{ color },
+	name_{ name } {}
 
 // A = 4*pi*r
 float Sphere::area()
@@ -31,14 +40,29 @@ float Sphere::volume()
 
 Box::Box()
 {
-	min_ = glm::vec3{ 0.0f, 0.0f, 0.0f };
-	max_ = glm::vec3{ 1.0f, 1.0f, 1.0f };
+	min_ = vec3{ 0.0f, 0.0f, 0.0f };
+	max_ = vec3{ 1.0f, 1.0f, 1.0f };
 }
 
-Box::Box(glm::vec3 min, glm::vec3 max)
+Box::Box(vec3 min, vec3 max)
 {
 	min_ = min;
 	max_ = max;
+}
+
+Box::Box(vec3 min, vec3 max, Color color)
+{
+	min_ = min;
+	max_ = max;
+	color_ = color;
+}
+
+Box::Box(vec3 min, vec3 max, Color color, string name)
+{
+	min_ = min;
+	max_ = max;
+	color_ = color;
+	name_ = name;
 }
 
 float Box::area()
