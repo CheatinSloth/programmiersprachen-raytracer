@@ -18,8 +18,8 @@ public:
 
 	Shape();
 	Shape(string const& name, Color const& color);
-	virtual float area() = 0;
-	virtual float volume() = 0;
+	virtual float const area() = 0;
+	virtual float const volume() = 0;
 	virtual std::ostream& print(std::ostream& os) const;
 	
 protected: 
@@ -35,8 +35,8 @@ public:
 	Sphere(vec3 const& center, float radius, Color const& color);
 	Sphere(vec3 const& center, float radius, Color const& color, string const& name);
 
-	float area() const;
-	float volume() const;
+	float const area() override;
+	float const volume() override;
 	std::ostream& print(std::ostream& os) const override;
 	HitPoint intersect(Ray const& r);
 
@@ -52,8 +52,8 @@ public:
 	Box(vec3 const& min, vec3 const& max, Color const& color);
 	Box(vec3 const& min, vec3 const& max, Color const& color, string const& name);
 
-	float area() const;
-	float volume() const;
+	float const area() override;
+	float const volume() override;
 	std::ostream& print(std::ostream& os) const override;
 
 

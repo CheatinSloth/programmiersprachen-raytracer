@@ -47,15 +47,15 @@ Sphere::Sphere(vec3 const& center, float radius, Color const& color, string cons
 	radius_{ radius }{}
 
 // A = 4*pi*r
-float Sphere::area() const
+float const Sphere::area()
 {
-	return 4 * M_PI * radius_;
+	return 4 * M_PI * abs(radius_);
 }
 
 // V = 4/3*pi*r^3
-float Sphere::volume() const
+float const Sphere::volume()
 {
-	return (4.0f/3.0f) * M_PI * std::pow(radius_, 3.0f);
+	return (4.0f/3.0f) * M_PI * std::pow(abs(radius_), 3.0f);
 }
 
 std::ostream& Sphere::print(std::ostream& os) const
@@ -82,7 +82,7 @@ Box::Box() :
 Box::Box(vec3 const& min, vec3 const& max) :
 	Shape(),
 	min_{ min },
-	max_ {max}{}
+	max_ { max }{}
 
 Box::Box(vec3 const& min, vec3 const& max, Color const& color) :
 
@@ -96,7 +96,7 @@ Box::Box(vec3 const& min, vec3 const& max, Color const& color, string const& nam
 	min_{ min },
 	max_{ max } {}
 
-float Box::area() const
+float const Box::area()
 {
 	float h = sqrt(pow(max_.y - min_.y, 2.0f));
 	float w = sqrt(pow(max_.x - min_.x, 2.0f));
@@ -105,7 +105,7 @@ float Box::area() const
 	return (2*h*l) + (2*h*w) + (2*w*l);
 }
 
-float Box::volume() const
+float const Box::volume()
 {
 	float h = sqrt(pow(max_.y - min_.y, 2.0f));
 	float w = sqrt(pow(max_.x - min_.x, 2.0f));
@@ -124,5 +124,4 @@ std::ostream& operator<<(std::ostream& os, Shape const& s)
 {
 	s.print(os);
 	return os;
-
 }

@@ -1,28 +1,58 @@
 #define CATCH_CONFIG_RUNNER
+#define _USE_MATH_DEFINES
 #include <catch.hpp>
-#include <glm/glm.hpp >
-#include <glm/gtx/intersect.hpp >
+#include <cmath>
+#include <glm/glm.hpp>
+#include <glm/gtx/intersect.hpp>
+#include <iostream>
+#include <string>
+#include "color.hpp"
+#include "shape.hpp"
+#include "ray.hpp"
+#include "hitpoint.hpp"
 
 
-TEST_CASE("area", "[Sphere::area]")
+TEST_CASE("Shape::Sphere", "[Sphere]")
 {
+	Sphere bob = { {4.0f, 4.0f, 4.0f}, 10.0f, {1.0f, 1.0f, 1.0f}, "Bob" };
+	Sphere tom = { {4.0f, 4.0f, 4.0f}, 7.34f, {0.33f, 0.33f, 0.33f}, "Tom" };
+	Sphere phil = { {4.0f, 4.0f, 4.0f}, -5.0f, {0.0f, 0.0f, 0.0f}, "Phil" };
 
+	SECTION("area") {
+		REQUIRE(bob.area() == Approx(1256.64f));
+		REQUIRE(tom.area() == Approx(677.02f));
+		REQUIRE(phil.area() == Approx(314.16f));
+	}
+	SECTION("volume") {
+		REQUIRE(bob.volume() == Approx(4188.79f));
+		REQUIRE(tom.volume() == Approx(1656.44f));
+		REQUIRE(phil.volume() == Approx(523.6f));
+	}
 }
 
-TEST_CASE("area", "[Box::area]")
+TEST_CASE("Shape::Box", "[Box]")
 {
-
+	Box bob = { {4.0f, 4.0f, 4.0f}, {6.0f, 6.0f, 6.0f}, {1.0f, 1.0f, 1.0f}, "Bob" };
+	Box tom = { {0.0f, 0.0f, 0.0f}, {10.0f, 11.0f, 10.0f}, {0.33f, 0.33f, 0.33f}, "Tom" };
+	Box phil = { {-2.0f, -2.0f, 3.0f}, {12.0f, 5.0f, 13.0f}, {0.0f, 0.0f, 0.0f}, "Phil" };
+	
+	SECTION("area") {
+		REQUIRE(bob.area() == Approx(0.0f));
+		REQUIRE(tom.area() == Approx(0.0f));
+		REQUIRE(phil.area() == Approx(0.0f));
+	}
+	SECTION("volume") {
+		REQUIRE(bob.volume() == Approx(0.0f));
+		REQUIRE(tom.volume() == Approx(0.0f));
+		REQUIRE(phil.volume() == Approx(0.0f));
+	}
+	std::cout << bob << std::endl;
+	std::cout << tom << std::endl;
+	std::cout << phil << std::endl;
+	
 }
 
-TEST_CASE("volume", "[Sphere::volume]")
-{
 
-}
-
-TEST_CASE("volume", "[Box::volume]")
-{
-
-}
 
 TEST_CASE("intersect_ray_sphere", "[intersect]")
 {
