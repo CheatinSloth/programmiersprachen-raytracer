@@ -3,8 +3,11 @@
 #include <string>
 #include <cmath>
 #include <glm/vec3.hpp>
+#include <glm/gtx/intersect.hpp>
 #include <iostream>
 #include "color.hpp"
+#include "ray.hpp"
+#include "hitpoint.hpp"
 
 using std::string;
 using glm::vec3;
@@ -32,9 +35,10 @@ public:
 	Sphere(vec3 const& center, float radius, Color const& color);
 	Sphere(vec3 const& center, float radius, Color const& color, string const& name);
 
-	float area();
-	float volume();
+	float area() const;
+	float volume() const;
 	std::ostream& print(std::ostream& os) const override;
+	HitPoint intersect(Ray const& r);
 
 protected: 
 	vec3 center_;
@@ -47,9 +51,11 @@ public:
 	Box(vec3 const& min, vec3 const& max);
 	Box(vec3 const& min, vec3 const& max, Color const& color);
 	Box(vec3 const& min, vec3 const& max, Color const& color, string const& name);
-	float area();
-	float volume();
+
+	float area() const;
+	float volume() const;
 	std::ostream& print(std::ostream& os) const override;
+
 
 protected:
 	vec3 min_;

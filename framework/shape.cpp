@@ -47,27 +47,37 @@ Sphere::Sphere(vec3 const& center, float radius, Color const& color, string cons
 	radius_{ radius }{}
 
 // A = 4*pi*r
-float Sphere::area()
+float Sphere::area() const
 {
 	return 4 * M_PI * radius_;
 }
+
 // V = 4/3*pi*r^3
-float Sphere::volume()
+float Sphere::volume() const
 {
 	return (4.0f/3.0f) * M_PI * std::pow(radius_, 3.0f);
 }
 
 std::ostream& Sphere::print(std::ostream& os) const
 {
-	Shape::print(os) << " Center: (" << center_.x << "," << center_.y << "," << center_.z << ") Radius: " << radius_ << endl;
+	Shape::print(os) << "Center: (" << center_.x << "," << center_.y << "," << center_.z << ") Radius: " << radius_ << endl;
 	return os;
+}
+
+HitPoint Sphere::intersect(Ray const& r)
+{
+	float distance = 0.0f;
+	vec3 normalizedDirection = glm::normalize(r.direction);
+	if(glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_ * radius_, distance))
+		return HitPoint{true, distance, name_, color_, normalizedDirection*distance, normalizedDirection};
+	else
+		return HitPoint{ false, distance, name_, color_, normalizedDirection, normalizedDirection };
 }
 
 Box::Box() :
 	Shape(),
 	min_ { 5.0f, 5.0f, 5.0f },
 	max_ { 20.0f, 20.0f, 20.0f } {}
-
 
 Box::Box(vec3 const& min, vec3 const& max) :
 	Shape(),
@@ -86,7 +96,7 @@ Box::Box(vec3 const& min, vec3 const& max, Color const& color, string const& nam
 	min_{ min },
 	max_{ max } {}
 
-float Box::area()
+float Box::area() const
 {
 	float h = sqrt(pow(max_.y - min_.y, 2.0f));
 	float w = sqrt(pow(max_.x - min_.x, 2.0f));
@@ -95,7 +105,7 @@ float Box::area()
 	return (2*h*l) + (2*h*w) + (2*w*l);
 }
 
-float Box::volume()
+float Box::volume() const
 {
 	float h = sqrt(pow(max_.y - min_.y, 2.0f));
 	float w = sqrt(pow(max_.x - min_.x, 2.0f));
