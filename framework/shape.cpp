@@ -1,31 +1,50 @@
 #include "shape.hpp"
 using std::string;
 using glm::vec3;
+using std::cout;
+using std::cin;
+using std::endl;
+
+Shape::Shape() :
+	name_{ "outis" },
+	color_{ 1.0f, 1.0f, 1.0f } {}
+
+Shape::Shape(string const& name, Color const& color) :
+	name_{ name },
+	color_{ color } {}
+
+std::ostream& Shape::print(std::ostream& os) const
+{
+	cout << "Name: " << name_ << " Color: (" << color_.r << "," << color_.g << "," << color_.b << ")" << endl;
+	return os;
+}
 
 Sphere::Sphere() :
-	center_{0.0f, 0.0f, 0.0f},
-	radius_{ 1.0f }, 
-	color_{1.0f, 1.0f, 1.0f} {}
+	Shape(),
+	center_{ 10.0f, 10.0f, 10.0f },
+	radius_{ 1.0f } {}
 
-Sphere::Sphere(vec3 center) :
+Sphere::Sphere(vec3 const& center) :
+	Shape(),
 	center_{ center },
 	radius_{1.0f} {}
 
 
-Sphere::Sphere(vec3 center, float radius) :
+Sphere::Sphere(vec3 const& center, float radius) :
+	Shape(),
 	center_{ center },
 	radius_{radius} {}
 
 
-Sphere::Sphere(vec3 center, float radius, Color color) :
+Sphere::Sphere(vec3 const& center, float radius, Color const& color) :
+	Shape("outis", color),
 	center_{center},
 	radius_{ radius } {}
 
-Sphere::Sphere(vec3 center, float radius, Color color, string name) :
+Sphere::Sphere(vec3 const& center, float radius, Color const& color, string const& name) :
+	Shape(name, color),
 	center_{ center },
-	radius_{ radius },
-	color_{ color },
-	name_{ name } {}
+	radius_{ radius }{}
 
 // A = 4*pi*r
 float Sphere::area()
@@ -38,32 +57,34 @@ float Sphere::volume()
 	return (4.0f/3.0f) * M_PI * std::pow(radius_, 3.0f);
 }
 
-Box::Box()
+std::ostream& Sphere::print(std::ostream& os) const
 {
-	min_ = vec3{ 0.0f, 0.0f, 0.0f };
-	max_ = vec3{ 1.0f, 1.0f, 1.0f };
+	Shape::print(os) << " Center: (" << center_.x << "," << center_.y << "," << center_.z << ") Radius: " << radius_ << endl;
+	return os;
 }
 
-Box::Box(vec3 min, vec3 max)
-{
-	min_ = min;
-	max_ = max;
-}
+Box::Box() :
+	Shape(),
+	min_ { 5.0f, 5.0f, 5.0f },
+	max_ { 20.0f, 20.0f, 20.0f } {}
 
-Box::Box(vec3 min, vec3 max, Color color)
-{
-	min_ = min;
-	max_ = max;
-	color_ = color;
-}
 
-Box::Box(vec3 min, vec3 max, Color color, string name)
-{
-	min_ = min;
-	max_ = max;
-	color_ = color;
-	name_ = name;
-}
+Box::Box(vec3 const& min, vec3 const& max) :
+	Shape(),
+	min_{ min },
+	max_ {max}{}
+
+Box::Box(vec3 const& min, vec3 const& max, Color const& color) :
+
+	Shape("outis", color),
+	min_{ min },
+	max_{ max } {}
+	
+
+Box::Box(vec3 const& min, vec3 const& max, Color const& color, string const& name) :
+	Shape(name, color),
+	min_{ min },
+	max_{ max } {}
 
 float Box::area()
 {
@@ -81,4 +102,17 @@ float Box::volume()
 	float l = sqrt(pow(max_.z - min_.z, 2.0f));
 
 	return h*w*l;
+}
+
+std::ostream& Box::print(std::ostream& os) const
+{
+	Shape::print(os) << "Min: (" << min_.x << "," << min_.y << "," << min_.z << ") Max: (" << max_.x << "," << max_.y << "," << max_.z << ")" << endl;
+	return os;
+}
+
+std::ostream& operator<<(std::ostream& os, Shape const& s)
+{
+	s.print(os);
+	return os;
+
 }
