@@ -21,6 +21,7 @@ public:
 	virtual float const area() = 0;
 	virtual float const volume() = 0;
 	virtual std::ostream& print(std::ostream& os) const;
+	virtual HitPoint intersect() = 0;
 	
 protected: 
 	string name_;
