@@ -64,14 +64,13 @@ std::ostream& Sphere::print(std::ostream& os) const
 	return os;
 }
 
-HitPoint const Sphere::intersect(Ray const& r)
+HitPoint Sphere::intersect(Ray const& r, float& t)
 {
-	float distance = 0.0f;
 	vec3 normalizedDirection = glm::normalize(r.direction);
-	if(glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_ * radius_, distance))
-		return HitPoint{true, distance, name_, color_, normalizedDirection*distance, normalizedDirection};
+	if(glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_ * radius_, t))
+		return HitPoint{true, t, name_, color_, normalizedDirection*t, normalizedDirection};
 	else
-		return HitPoint{ false, distance, name_, color_, normalizedDirection, normalizedDirection };
+		return HitPoint{ false, t, name_, color_, normalizedDirection, normalizedDirection };
 }
 
 Box::Box() :
@@ -112,6 +111,15 @@ float const Box::volume()
 	float l = sqrt(pow(max_.z - min_.z, 2.0f));
 
 	return h*w*l;
+}
+
+HitPoint Box::intersect(Ray const& r, float& t)
+{
+    vec3 normalizedDirection = glm::normalize(r.direction);
+    if(glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_ * radius_, t))
+        return HitPoint{true, t, name_, color_, normalizedDirection*t, normalizedDirection};
+    else
+        return HitPoint{ false, t, name_, color_, normalizedDirection, normalizedDirection };
 }
 
 std::ostream& Box::print(std::ostream& os) const

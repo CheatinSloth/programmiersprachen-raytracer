@@ -21,7 +21,7 @@ public:
 	virtual float const area() = 0;
 	virtual float const volume() = 0;
 	virtual std::ostream& print(std::ostream& os) const;
-	virtual HitPoint intersect() = 0;
+	virtual HitPoint intersect(Ray const& ray, float& t) = 0;
 	
 protected: 
 	string name_;
@@ -39,7 +39,7 @@ public:
 	float const area() override;
 	float const volume() override;
 	std::ostream& print(std::ostream& os) const override;
-	HitPoint const intersect(Ray const& r) const override;
+	HitPoint intersect(Ray const& r, float& t) override;
 
 protected: 
 	vec3 center_;
@@ -56,7 +56,7 @@ public:
 	float const area() override;
 	float const volume() override;
 	std::ostream& print(std::ostream& os) const override;
-	HitPoint intersect(Ray const& ray, float& t) const override;
+	HitPoint intersect(Ray const& ray, float& t) override;
 
 
 protected:
