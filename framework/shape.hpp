@@ -38,7 +38,7 @@ public:
 	float const area() override;
 	float const volume() override;
 	std::ostream& print(std::ostream& os) const override;
-	HitPoint intersect(Ray const& r);
+	HitPoint const intersect(Ray const& r);
 
 protected: 
 	vec3 center_;

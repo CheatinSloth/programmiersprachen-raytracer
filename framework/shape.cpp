@@ -64,7 +64,7 @@ std::ostream& Sphere::print(std::ostream& os) const
 	return os;
 }
 
-HitPoint Sphere::intersect(Ray const& r)
+HitPoint const Sphere::intersect(Ray const& r)
 {
 	float distance = 0.0f;
 	vec3 normalizedDirection = glm::normalize(r.direction);
