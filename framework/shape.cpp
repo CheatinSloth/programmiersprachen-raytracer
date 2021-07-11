@@ -113,26 +113,30 @@ float const Box::volume()
 	return h*w*l;
 }
 
-HitPoint Box::intersect(Ray const& r, float& t)
-{
+HitPoint Box::intersect(Ray const& r, float& t) {
+    float closes_dis;
     vec3 normalizedDirection = glm::normalize(r.direction);
-   t = (min_.x-r.origin.x)/ normalizedDirection.x;
-   vec3 dist_temp = normalizedDirection * t;
+    float p_x = min_.x;
+    t = (min_.x - r.origin.x)/r.direction.x;
+    float p_y = r.origin.y + t *r.direction.y;
+    float p_z = r.origin.z + t *r.direction.z;
 
-   if (dist_temp.y>=min_.y || dist_temp.y<=max_.y){
-       if (dist_temp.z>=min_.z || dist_temp.z<=max_.z) {
-           return HitPoint{true, t, name_, color_, normalizedDirection * t, normalizedDirection};
-       }
-       else
-       {
-           return HitPoint{false, t, name_, color_, normalizedDirection, normalizedDirection};
-       }
-       }
-   else
-   {
-       return HitPoint{false, t, name_, color_, normalizedDirection, normalizedDirection};
-   }
-   }
+
+    vec3 dist_temp = {p_x,p_y,p_z};
+
+    if (dist_temp.y >= min_.y && dist_temp.y <= max_.y) {
+        if (dist_temp.z >= min_.z && dist_temp.z <= max_.z) {
+            return HitPoint{true, t, name_, color_, normalizedDirection * t, normalizedDirection};
+        } else {
+            return HitPoint{false, t, name_, color_, normalizedDirection, normalizedDirection};
+        }
+    }
+        else
+        {
+            return HitPoint{false, t, name_, color_, normalizedDirection, normalizedDirection};
+        }
+    }
+
 
 
 std::ostream& Box::print(std::ostream& os) const
