@@ -116,11 +116,24 @@ float const Box::volume()
 HitPoint Box::intersect(Ray const& r, float& t)
 {
     vec3 normalizedDirection = glm::normalize(r.direction);
-    if(glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_ * radius_, t))
-        return HitPoint{true, t, name_, color_, normalizedDirection*t, normalizedDirection};
-    else
-        return HitPoint{ false, t, name_, color_, normalizedDirection, normalizedDirection };
-}
+   t = (min_.x-r.origin.x)/ normalizedDirection.x;
+   vec3 dist_temp = normalizedDirection * t;
+
+   if (dist_temp.y>=min_.y || dist_temp.y<=max_.y){
+       if (dist_temp.z>=min_.z || dist_temp.z<=max_.z) {
+           return HitPoint{true, t, name_, color_, normalizedDirection * t, normalizedDirection};
+       }
+       else
+       {
+           return HitPoint{false, t, name_, color_, normalizedDirection, normalizedDirection};
+       }
+       }
+   else
+   {
+       return HitPoint{false, t, name_, color_, normalizedDirection, normalizedDirection};
+   }
+   }
+
 
 std::ostream& Box::print(std::ostream& os) const
 {
