@@ -8,6 +8,7 @@
 #include "color.hpp"
 #include "ray.hpp"
 #include "hitpoint.hpp"
+#include "material.hpp"
 
 using std::string;
 using glm::vec3;
@@ -17,7 +18,7 @@ class Shape {
 public:
 
 	Shape();
-	Shape(string const& name, Color const& color);
+	Shape(string const& name, Material const& mats);
 	virtual float const area() = 0;
 	virtual float const volume() = 0;
 	virtual std::ostream& print(std::ostream& os) const;
@@ -25,7 +26,7 @@ public:
 	
 protected: 
 	string name_;
-	Color color_;
+	Material mat_;
 };
 
 class Sphere : public Shape {
@@ -33,8 +34,8 @@ public:
 	Sphere();
 	Sphere(vec3 const& center);
 	Sphere(vec3 const& center, float radius);
-	Sphere(vec3 const& center, float radius, Color const& color);
-	Sphere(vec3 const& center, float radius, Color const& color, string const& name);
+	Sphere(vec3 const& center, float radius, Material const& mats);
+	Sphere(vec3 const& center, float radius, Material const& mats, string const& name);
 
 	float const area() override;
 	float const volume() override;
@@ -50,8 +51,8 @@ class Box : public Shape {
 public:
 	Box();
 	Box(vec3 const& min, vec3 const& max);
-	Box(vec3 const& min, vec3 const& max, Color const& color);
-	Box(vec3 const& min, vec3 const& max, Color const& color, string const& name);
+	Box(vec3 const& min, vec3 const& max, Material const& mats);
+	Box(vec3 const& min, vec3 const& max, Material const& mats, string const& name);
 
 	float const area() override;
 	float const volume() override;
