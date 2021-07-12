@@ -41,7 +41,7 @@ TEST_CASE("intersect_ray_box", "[intersect]")
     Ray brrr;
     brrr.origin = rai;
     brrr.direction = rai_dir;
-    Box Peter{{-1.0f,1.0f,0.0f},{1.0f, 2.0f, 1.0f}};
+    Box Peter{{-1.0f,-1.0f,2.0f},{1.0f, 1.0f, 4.0f}};
     HitPoint boi = Peter.intersect(brrr, t);
     REQUIRE(boi.hit == true);
     REQUIRE(boi.dist == Approx(3.0f));

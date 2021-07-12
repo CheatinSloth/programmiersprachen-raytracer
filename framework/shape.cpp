@@ -1,4 +1,6 @@
 #include "shape.hpp"
+#include "cmath"
+#include "iostream"
 using std::string;
 using glm::vec3;
 using std::cout;
@@ -117,6 +119,7 @@ float const Box::volume()
 
 HitPoint Box::intersect(Ray const& r, float& t)
 {
+    /*
     float q,s,closes_dis;
     //Ray als geraden funktion
      glm ::vec3 boi = r.origin + t * r.direction;
@@ -130,45 +133,40 @@ HitPoint Box::intersect(Ray const& r, float& t)
     glm::vec3 v2 = p2 -min_;
 
     glm::vec3 norm = {(v1.y*v2.z)-(v1.z*v2.y), (v1.z*v2.x)-(v1.x*v2.z), (v1.x*v2.y)-(v1.y*v2.x)};
-    
-    //E: x = min_ + q* v1 + s* v2
-    //x1 = min_.x + q * v1.x + s * v2.x
-    //x2 = min_.y + q * v1.y + s * v2.y
-    //x3 = min_.z + q * v1.z + s * v2.z
-
-    math;
-
-    //konvertiere parameter in koordinaten form der ebene
-
+    float a = p1.x*norm.x;
+    float b = p1.y*norm.y;
+    float c = p1.z*norm.z;
+    float d = a + b + c;
     //setze Gerade in ebene ein
     //bestimmr r
+    q = (-a*r.origin.x-b*r.origin.y-c*r.origin.z+d)/(a*r.direction.x+b*r.direction.y+c*r.direction.z);
+    glm::vec3 point;
     //setze r in Gerade ein um Schnittpunkt(e) zu errechnen
-    //check welcher schnittpunkt die geringste distanz zum ray origin hat
-    //return diesen hitpoint
-    vec3 normalizedDirection = glm::normalize(r.direction);
-    float p_x = min_.x;
-    t = (min_.x - r.origin.x)/r.direction.x;
-    float p_y = r.origin.y + t *r.direction.y;
-    float p_z = r.origin.z + t *r.direction.z;
+    float fin_x = r.origin.x + q * r.direction.x;
+    float fin_y = r.origin.y + q * r.direction.y;
+    float fin_z = r.origin.z + q * r.direction.z;
 
-    vec3 dist_temp = {p_x,p_y,p_z};
+    point = {fin_x,fin_y,fin_z};
 
-    if (dist_temp.y >= min_.y && dist_temp.y <= max_.y)
+    if (point.y >= min_.y && point.y <= max_.y)
     {
-        if (dist_temp.z >= min_.z && dist_temp.z <= max_.z)
+        if (point.z >= min_.z && point.z <= max_.z)
         {
-            return HitPoint{true, t, name_, color_, normalizedDirection * t, normalizedDirection};
+            return HitPoint{true, t, name_, color_, point * t, r.direction};
         }
         else
         {
-            return HitPoint{false, t, name_, color_, normalizedDirection, normalizedDirection};
+            return HitPoint{false, t, name_, color_, point, r.direction};
         }
     }
     else
     {
-        return HitPoint{false, t, name_, color_, normalizedDirection, normalizedDirection};
+        return HitPoint{false, t, name_, color_, point, r.direction};
     }
-}
+    //check welcher schnittpunkt die geringste distanz zum ray origin hat
+    //return diesen hitpoint
+   */
+    
 
 
 
