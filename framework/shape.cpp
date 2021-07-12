@@ -117,58 +117,21 @@ float const Box::volume()
 	return h*w*l;
 }
 
-HitPoint Box::intersect(Ray const& r, float& t)
-{
-    /*
-    float q,s,closes_dis;
-    //Ray als geraden funktion
-     glm ::vec3 boi = r.origin + t * r.direction;
-    //calculate plane
-    //using min_ and max_ to construct planes
-    //min_, p1{min_.x, min_.y, max_.z}, p2{min_.x, max_.y, min_.z}
-    glm::vec3 p1 = {min_.x, min_.y, max_.z};
-    glm::vec3 p2 = {min_.x, max_.y, min_.z};
-    //Richtungsvektoren für die Ebene
-    glm::vec3 v1 = p1 -min_;
-    glm::vec3 v2 = p2 -min_;
+HitPoint Box::intersect(Ray const& r, float& t) {
+    float x_plane = min_.x;
+    t = (x_plane - r.origin.x) / r.direction.x;
+    glm::vec3 point = r.origin + t * r.direction;
 
-    glm::vec3 norm = {(v1.y*v2.z)-(v1.z*v2.y), (v1.z*v2.x)-(v1.x*v2.z), (v1.x*v2.y)-(v1.y*v2.x)};
-    float a = p1.x*norm.x;
-    float b = p1.y*norm.y;
-    float c = p1.z*norm.z;
-    float d = a + b + c;
-    //setze Gerade in ebene ein
-    //bestimmr r
-    q = (-a*r.origin.x-b*r.origin.y-c*r.origin.z+d)/(a*r.direction.x+b*r.direction.y+c*r.direction.z);
-    glm::vec3 point;
-    //setze r in Gerade ein um Schnittpunkt(e) zu errechnen
-    float fin_x = r.origin.x + q * r.direction.x;
-    float fin_y = r.origin.y + q * r.direction.y;
-    float fin_z = r.origin.z + q * r.direction.z;
-
-    point = {fin_x,fin_y,fin_z};
-
-    if (point.y >= min_.y && point.y <= max_.y)
-    {
-        if (point.z >= min_.z && point.z <= max_.z)
-        {
+    if (point.y >= min_.y && point.y <= max_.y) {
+        if (point.z >= min_.z && point.z <= max_.z) {
             return HitPoint{true, t, name_, color_, point * t, r.direction};
-        }
-        else
-        {
+        } else {
             return HitPoint{false, t, name_, color_, point, r.direction};
         }
-    }
-    else
-    {
+    } else {
         return HitPoint{false, t, name_, color_, point, r.direction};
     }
-    //check welcher schnittpunkt die geringste distanz zum ray origin hat
-    //return diesen hitpoint
-   */
-    
-
-
+}
 
 std::ostream& Box::print(std::ostream& os) const
 {
