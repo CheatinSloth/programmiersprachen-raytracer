@@ -37,16 +37,16 @@ TEST_CASE("intersect_ray_box", "[intersect]")
     //ray construction
     float t = 0.0f;
     glm::vec3 rai = {0.0f, 0.0f, 0.0f};
-    glm::vec3 rai_dir = {1.0f, 0.0f, 0.0f};
+    glm::vec3 rai_dir = {0.0f, 1.0f, 0.0f};
     Ray brrr;
     brrr.origin = rai;
     brrr.direction = rai_dir;
-    Box Peter{{2.0f,-1.0f,-1.0f},{4.0f, 1.0f, 1.0f}};
+    Box Peter{{-1.0f,1.0f,-1.0f},{1.0f, 2.0f, 1.0f}};
     HitPoint boi = Peter.intersect(brrr, t);
     REQUIRE(boi.hit == true);
-    REQUIRE(boi.dist == Approx(2.0f));
-    REQUIRE(boi.touchPoint.x == Approx(4.0f));
-    REQUIRE(boi.touchPoint.y == Approx(0.0f));
+    REQUIRE(boi.dist == Approx(1.0f));
+    REQUIRE(boi.touchPoint.x == Approx(0.0f));
+    REQUIRE(boi.touchPoint.y == Approx(1.0f));
     REQUIRE(boi.touchPoint.z == Approx(0.0f));
 }
 

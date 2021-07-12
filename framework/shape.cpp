@@ -118,19 +118,65 @@ float const Box::volume()
 }
 
 HitPoint Box::intersect(Ray const& r, float& t) {
-    float x_plane = min_.x;
-    t = (x_plane - r.origin.x) / r.direction.x;
+    float shortest_dis = 100;
+    float distances[6];
+
+    float x_min = min_.x;
+    t = (x_min - r.origin.x) / r.direction.x;
+    glm::vec3 point_x_min = r.origin + t * r.direction;
+    glm::vec3 vec = point_x_min - r.origin;
+    distances[0] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+
+    float x_max = max_.x;
+    t = (x_max - r.origin.x) / r.direction.x;
+    glm::vec3 point_x_max = r.origin + t * r.direction;
+    vec = point_x_max - r.origin;
+    distances[1] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+
+    float y_min = min_.y;
+    t = (y_min - r.origin.y) / r.direction.y;
+    glm::vec3 point_y_min = r.origin + t * r.direction;
+    vec = point_y_min - r.origin;
+    distances[2] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+
+    float y_max = max_.y;
+    t = (y_max - r.origin.y) / r.direction.y;
+    glm::vec3 point_y_max = r.origin + t * r.direction;
+    vec = point_y_max - r.origin;
+    distances[3] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+
+    float z_min = min_.z;
+    t = (z_min - r.origin.z) / r.direction.z;
+    glm::vec3 point_z_min = r.origin + t * r.direction;
+    vec = point_z_min - r.origin;
+    distances[4] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+
+    float z_max =max_.z;
+    t = (z_max - r.origin.z) / r.direction.z;
+    glm::vec3 point_z_max = r.origin + t * r.direction;
+    vec = point_z_max - r.origin;
+    distances[5] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+
+    for (int i = 0; i<=5; i++){
+        if(distances[i]<shortest_dis){
+            if(distances[i]!=0) {
+                shortest_dis = distances[i];
+            }
+        }
+    }
+    t = shortest_dis;
     glm::vec3 point = r.origin + t * r.direction;
 
     if (point.y >= min_.y && point.y <= max_.y) {
         if (point.z >= min_.z && point.z <= max_.z) {
-            return HitPoint{true, t, name_, color_, point * t, r.direction};
+            return HitPoint{true, t, name_, color_, point, glm::normalize(r.direction)};
         } else {
-            return HitPoint{false, t, name_, color_, point, r.direction};
+            return HitPoint{false, t, name_, color_, point, glm::normalize(r.direction)};
         }
     } else {
-        return HitPoint{false, t, name_, color_, point, r.direction};
+        return HitPoint{false, t, name_, color_, point, glm::normalize(r.direction)};
     }
+
 }
 
 std::ostream& Box::print(std::ostream& os) const
