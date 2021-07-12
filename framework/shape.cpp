@@ -11,15 +11,15 @@ using std::endl;
 
 Shape::Shape() :
 	name_{ "outis" },
-	color_{ 1.0f, 1.0f, 1.0f } {}
+    mat_{{"our_mat"},{ 0.0f, 1.0f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 1.0f, 0.0f }, 70}{}
 
-Shape::Shape(string const& name, Color const& color) :
+Shape::Shape(string const& name, Material const& mats) :
 	name_{ name },
-	color_{ color } {}
+	mat_ {mats}{}
 
 std::ostream& Shape::print(std::ostream& os) const
 {
-	cout << "Name: " << name_ << " Color: (" << color_.r << "," << color_.g << "," << color_.b << ")" << endl;
+	cout << "Name: " << name_ << " Material: (" << mat_.ka << "," << mat_.kd<< "," << mat_.ks << ","<< mat_.reflectionExponent<<")" << endl;
 	return os;
 }
 
@@ -40,13 +40,13 @@ Sphere::Sphere(vec3 const& center, float radius) :
 	radius_{radius} {}
 
 
-Sphere::Sphere(vec3 const& center, float radius, Color const& color) :
-	Shape("outis", color),
+Sphere::Sphere(vec3 const& center, float radius, Material const& mats) :
+	Shape("outis", mats),
 	center_{center},
 	radius_{ radius } {}
 
-Sphere::Sphere(vec3 const& center, float radius, Color const& color, string const& name) :
-	Shape(name, color),
+Sphere::Sphere(vec3 const& center, float radius, Material const& mats, string const& name) :
+	Shape(name, mats),
 	center_{ center },
 	radius_{ radius }{}
 
@@ -72,9 +72,9 @@ HitPoint Sphere::intersect(Ray const& r, float& t)
 {
 	vec3 normalizedDirection = glm::normalize(r.direction);
 	if(glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_ * radius_, t))
-		return HitPoint{true, t, name_, color_, normalizedDirection*t, normalizedDirection};
+		return HitPoint{true, t, name_, mat_, normalizedDirection*t, normalizedDirection};
 	else
-		return HitPoint{ false, t, name_, color_, normalizedDirection, normalizedDirection };
+		return HitPoint{ false, t, name_, mat_, normalizedDirection, normalizedDirection };
 }
 
 Box::Box() :
@@ -87,15 +87,15 @@ Box::Box(vec3 const& min, vec3 const& max) :
 	min_{ min },
 	max_ { max }{}
 
-Box::Box(vec3 const& min, vec3 const& max, Color const& color) :
+Box::Box(vec3 const& min, vec3 const& max, Material const& mats) :
 
-	Shape("outis", color),
+	Shape("outis", mats),
 	min_{ min },
 	max_{ max } {}
 	
 
-Box::Box(vec3 const& min, vec3 const& max, Color const& color, string const& name) :
-	Shape(name, color),
+Box::Box(vec3 const& min, vec3 const& max, Material const& mats, string const& name) :
+	Shape(name, mats),
 	min_{ min },
 	max_{ max } {}
 
@@ -169,12 +169,12 @@ HitPoint Box::intersect(Ray const& r, float& t) {
 
     if (point.y >= min_.y && point.y <= max_.y) {
         if (point.z >= min_.z && point.z <= max_.z) {
-            return HitPoint{true, t, name_, color_, point, glm::normalize(r.direction)};
+            return HitPoint{true, t, name_, mat_, point, glm::normalize(r.direction)};
         } else {
-            return HitPoint{false, t, name_, color_, point, glm::normalize(r.direction)};
+            return HitPoint{false, t, name_, mat_, point, glm::normalize(r.direction)};
         }
     } else {
-        return HitPoint{false, t, name_, color_, point, glm::normalize(r.direction)};
+        return HitPoint{false, t, name_, mat_, point, glm::normalize(r.direction)};
     }
 
 }
