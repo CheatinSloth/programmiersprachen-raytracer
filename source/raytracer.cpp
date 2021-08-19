@@ -5,6 +5,9 @@
 #include <thread>
 #include <utility>
 #include <cmath>
+#include <fstream>
+#include "scene.hpp"
+#include "shape.hpp"
 
 using namespace::std;
 
@@ -44,9 +47,8 @@ void parse(string fileName, Scene sdfScene) {
 
 					Sphere sdfSphere({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },
 						stof(instructions[7]),
-						sceneShapes.at(instructions[8]),
+						sdfScene.sceneMaterial.at(instructions[8]),
 						instructions[3]);
-
 				}
 
 				// Block for creating Shape::Box and adding it to sceneShapes map
@@ -58,10 +60,10 @@ void parse(string fileName, Scene sdfScene) {
 
 					Box sdfBox({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) }, // min
 						{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) }, // max
-						sceneMaterials.at(instructions[10]),									 // material
+						sdfScene.sceneMaterial.at(instructions[10]),									 // material
 						instructions[3]);														 // name
 
-					sceneShapes.emplace(instructions[3], sdfBox);
+					sdfScene.sceneElements.emplace(instructions[3], sdfBox);
 				}
 
 
@@ -78,7 +80,7 @@ void parse(string fileName, Scene sdfScene) {
 					sdfMaterial.ks = { stof(instructions[9]), stof(instructions[10]), stof(instructions[11]) };
 					sdfMaterial.reflectionExponent = stof(instructions[12]);
 
-					sceneMaterials.emplace(instructions[2], sdfMaterial);
+					sdfScene.sceneMaterial.emplace(instructions[2], sdfMaterial);
 				}
 
 				// Block for creating Camera and adding it to sceneCameras map
@@ -92,7 +94,7 @@ void parse(string fileName, Scene sdfScene) {
 					sdfCamera.position_ = { stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) };
 					sdfCamera.resolutionV_ = { stoi(instructions[7]) };
 					sdfCamera.resolutionH_ = { stoi(instructions[8]) };
-					SceneCameras.insert(pair<string, Camera>(instructions[2], sdfCamera));
+					sdfScene.sceneCameras.insert(pair<string, Camera>(instructions[2], sdfCamera));
 				}
 
 				// Check for comment to simply skip line

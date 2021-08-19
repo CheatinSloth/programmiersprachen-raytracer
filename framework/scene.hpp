@@ -8,9 +8,9 @@ using std::vector;
 using std::map;
 
 struct Scene {
-	map<string, Shape> elements;
+	map<string, Shape> sceneElements;
 	vector<Ray> lightSources;
 	vector<Ray> baseLighting;
-	map<string, Camera> camera;
-	map<string, Material> sceneMaterial;
+	map<string, Camera> sceneCameras;
+	map<string, std::shared_ptr<Material> > sceneMaterial;
 };
