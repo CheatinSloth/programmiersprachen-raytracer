@@ -13,7 +13,7 @@ Shape::Shape() :
 	name_{ "outis" },
     mat_{{"our_mat"},{ 0.0f, 1.0f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 1.0f, 0.0f }, 70}{}
 
-Shape::Shape(string const& name, Material const& mats) :
+Shape::Shape(string const& name, std::shared_ptr<Material> const& mats) :
 	name_{ name },
 	mat_ {mats}{}
 
@@ -40,12 +40,12 @@ Sphere::Sphere(vec3 const& center, float radius) :
 	radius_{radius} {}
 
 
-Sphere::Sphere(vec3 const& center, float radius, Material const& mats) :
+Sphere::Sphere(vec3 const& center, float radius, std::shared_ptr<Material> const& mats) :
 	Shape("outis", mats),
 	center_{center},
 	radius_{ radius } {}
 
-Sphere::Sphere(vec3 const& center, float radius, Material const& mats, string const& name) :
+Sphere::Sphere(vec3 const& center, float radius, std::shared_ptr<Material> const& mats, string const& name) :
 	Shape(name, mats),
 	center_{ center },
 	radius_{ radius }{}
@@ -87,14 +87,14 @@ Box::Box(vec3 const& min, vec3 const& max) :
 	min_{ min },
 	max_ { max }{}
 
-Box::Box(vec3 const& min, vec3 const& max, Material const& mats) :
+Box::Box(vec3 const& min, vec3 const& max, std::shared_ptr<Material> const& mats) :
 
 	Shape("outis", mats),
 	min_{ min },
 	max_{ max } {}
 	
 
-Box::Box(vec3 const& min, vec3 const& max, Material const& mats, string const& name) :
+Box::Box(vec3 const& min, vec3 const& max, std::shared_ptr<Material> const& mats, string const& name) :
 	Shape(name, mats),
 	min_{ min },
 	max_{ max } {}

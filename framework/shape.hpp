@@ -18,7 +18,7 @@ class Shape {
 public:
 
 	Shape();
-	Shape(string const& name, Material const& mats);
+	Shape(string const& name, std::shared_ptr<Material> const& mats);
 	virtual float const area() = 0;
 	virtual float const volume() = 0;
 	virtual std::ostream& print(std::ostream& os) const;
@@ -26,7 +26,7 @@ public:
 	
 protected: 
 	string name_;
-	Material mat_;
+	std::shared_ptr<Material> mat_;
 };
 
 class Sphere : public Shape {
@@ -34,8 +34,8 @@ public:
 	Sphere();
 	Sphere(vec3 const& center);
 	Sphere(vec3 const& center, float radius);
-	Sphere(vec3 const& center, float radius, Material const& mats);
-	Sphere(vec3 const& center, float radius, Material const& mats, string const& name);
+	Sphere(vec3 const& center, float radius, std::shared_ptr<Material> const& mats);
+	Sphere(vec3 const& center, float radius, std::shared_ptr<Material> const& mats, string const& name);
 
 	float const area() override;
 	float const volume() override;
@@ -51,8 +51,8 @@ class Box : public Shape {
 public:
 	Box();
 	Box(vec3 const& min, vec3 const& max);
-	Box(vec3 const& min, vec3 const& max, Material const& mats);
-	Box(vec3 const& min, vec3 const& max, Material const& mats, string const& name);
+	Box(vec3 const& min, vec3 const& max, std::shared_ptr<Material> const& mats);
+	Box(vec3 const& min, vec3 const& max, std::shared_ptr<Material> const& mats, string const& name);
 
 	float const area() override;
 	float const volume() override;
