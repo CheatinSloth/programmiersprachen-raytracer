@@ -44,10 +44,10 @@ void parse(string const& fileName, Scene sdfScene) {
 						break;
 					}
 
-					Sphere sdfSphere({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },
-						stof(instructions[7]),
-						sdfScene.sceneMaterial.at(instructions[8]),
-						instructions[3]);
+					Sphere sdfSphere({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) }, // Center
+						stof(instructions[7]),																  // Radius
+						sdfScene.sceneMaterial.at(instructions[8]),                                           // Material
+						instructions[3]);                                                                     // Name
 				}
 
 				// Block for creating Shape::Box and adding it to sceneShapes map
@@ -57,10 +57,10 @@ void parse(string const& fileName, Scene sdfScene) {
 						break;
 					}
 
-					Box sdfBox({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) }, // min
-						{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) }, // max
-						sdfScene.sceneMaterial.at(instructions[10]),									 // material
-						instructions[3]);														 // name
+					Box sdfBox({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },       // min
+						{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },	          // max
+						sdfScene.sceneMaterial.at(instructions[10]),									      // material
+						instructions[3]);														              // name
 
 					sdfScene.sceneElements.emplace(instructions[3], sdfBox);
 				}
