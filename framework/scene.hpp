@@ -12,4 +12,5 @@ struct Scene {
 	vector<Ray> lightSources;
 	vector<Ray> baseLighting;
 	map<string, Camera> camera;
+	map<string, Material> sceneMaterial;
 };
