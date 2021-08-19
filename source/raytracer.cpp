@@ -109,7 +109,7 @@ void parse(string const& fileName, Scene sdfScene) {
 				}
 			}
 
-			// Missing define terminates program
+			// Missing "define" terminates program
 			else {
 				cout << "Incorrect instruction in File";
 				break;
