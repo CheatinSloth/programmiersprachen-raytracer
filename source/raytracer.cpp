@@ -11,9 +11,7 @@
 
 using namespace::std;
 
-void parse(string fileName, Scene sdfScene) {
-
-
+void parse(string const& fileName, Scene sdfScene) {
 	vector<string> instructions;
 
 	fstream file; // SDF File
@@ -90,10 +88,10 @@ void parse(string fileName, Scene sdfScene) {
 						break;
 					}
 					Camera sdfCamera;
-					sdfCamera.angle_ = stof(instructions[3]);
-					sdfCamera.position_ = { stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) };
-					sdfCamera.resolutionV_ = { stoi(instructions[7]) };
-					sdfCamera.resolutionH_ = { stoi(instructions[8]) };
+					sdfCamera.angle = stof(instructions[3]);
+					sdfCamera.position = { stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) };
+					sdfCamera.resolutionV = { stoi(instructions[7]) };
+					sdfCamera.resolutionH = { stoi(instructions[8]) };
 					sdfScene.sceneCameras.insert(pair<string, Camera>(instructions[2], sdfCamera));
 				}
 

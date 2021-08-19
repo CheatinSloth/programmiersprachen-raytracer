@@ -118,7 +118,7 @@ float const Box::volume()
 }
 
 HitPoint Box::intersect(Ray const& r, float& t) {
-    float shortest_dis = 100;
+    float shortest_dis = INFINITY;
     float distances[6];
 
     float x_min = min_.x;
