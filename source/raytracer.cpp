@@ -85,15 +85,16 @@ void parse(string const& fileName, Scene sdfScene) {
 
 				// Block for creating Camera and adding it to sceneCameras map
 				else if (instructions[1] == "camera") {
-					if (instructions.size() != 9) {
+					if (instructions.size() != 13) {
 						cout << "Incorrect instruction syntax";
 						break;
 					}
 					Camera sdfCamera;
 					sdfCamera.angle = stof(instructions[3]);
 					sdfCamera.position = { stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) };
-					sdfCamera.resolutionV = { stoi(instructions[7]) };
-					sdfCamera.resolutionH = { stoi(instructions[8]) };
+					sdfCamera.direction = { stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) };
+					sdfCamera.up = { stof(instructions[10]), stof(instructions[11]), stof(instructions[12]) };
+					
 					sdfScene.sceneCameras.insert(pair<string, Camera>(instructions[2], sdfCamera));
 				}
 
