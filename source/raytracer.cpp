@@ -37,7 +37,6 @@ void parse(string const& fileName, Scene sdfScene) {
 			if (instructions[0] == "define") {
 				cout << "Attempting to create " << instructions[1];
 
-
 				// Block for creating Shape::Sphere and adding it to sceneShapes map
 				if (instructions[1] == "shape" && instructions[2] == "sphere") {
 					if (instructions.size() != 9) {
@@ -90,14 +89,35 @@ void parse(string const& fileName, Scene sdfScene) {
 						break;
 					}
 					Camera sdfCamera;
+					sdfCamera.name = instructions[2];
 					sdfCamera.angle = stof(instructions[3]);
 					sdfCamera.position = { stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) };
 					sdfCamera.direction = { stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) };
 					sdfCamera.up = { stof(instructions[10]), stof(instructions[11]), stof(instructions[12]) };
 					
-					sdfScene.sceneCameras.insert(pair<string, Camera>(instructions[2], sdfCamera));
+					sdfScene.sceneCameras.emplace(instructions[2], sdfCamera);
 				}
 
+				// Block for creating light source and adding it to lightsource map
+				else if (instructions[1] == "light") {
+					if (instructions.size() != 10) {
+						cout << "Incorrect instruction syntax";
+						break;
+					}
+					light sdfLight;
+					sdfLight.name = instructions[2];
+					sdfLight.position = { stof(instructions[3]) ,stof(instructions[4]) ,stof(instructions[5]) };
+					sdfLight.hue = { stof(instructions[6]) ,stof(instructions[7]) ,stof(instructions[8]) };
+					sdfLight.luminance = stoi(instructions[9]);
+
+					sdfScene.lightSources.emplace(instructions[2], sdfLight);
+				}
+
+				else if (instructions[1] == "transform") {
+					if (instructions[2] == "scale") {}
+					if (instructions[2] == "translate") {}
+					if (instructions[2] == "rotate") {}
+				}
 				// Check for comment to simply skip line
 				else if (instructions[1] == "#") {
 					continue;
@@ -107,6 +127,15 @@ void parse(string const& fileName, Scene sdfScene) {
 					cout << "Incorrect instruction " << instructions[1] << " in File";
 					break;
 				}
+			}
+
+			// Set ambient lighting
+			else if (instructions[0] == "ambient") {
+				if (instructions.size() != 4) {
+					cout << "Incorrect instruction syntax";
+					break;
+				}
+				sdfScene.baseLighting = { stof(instructions[1]), stof(instructions[2]), stof(instructions[3]) };
 			}
 
 			// Missing "define" terminates program
