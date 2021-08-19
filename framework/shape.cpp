@@ -11,15 +11,15 @@ using std::endl;
 
 Shape::Shape() :
 	name_{ "outis" },
-    mat_{{"our_mat"},{ 0.0f, 1.0f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 1.0f, 0.0f }, 70}{}
+	mat_{} {}
 
 Shape::Shape(string const& name, std::shared_ptr<Material> const& mats) :
 	name_{ name },
-	mat_ {mats}{}
+	mat_ { mats }{}
 
 std::ostream& Shape::print(std::ostream& os) const
 {
-	cout << "Name: " << name_ << " Material: (" << mat_.ka << "," << mat_.kd<< "," << mat_.ks << ","<< mat_.reflectionExponent<<")" << endl;
+	cout << "Name: " << name_ << " Material: (" << mat_->ka << "," << mat_->kd<< "," << mat_->ks << ","<< mat_->reflectionExponent<<")" << endl;
 	return os;
 }
 
