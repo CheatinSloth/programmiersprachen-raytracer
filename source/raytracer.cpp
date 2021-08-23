@@ -62,7 +62,7 @@ void parse(string const& fileName, Scene sdfScene) {
 						sdfScene.sceneMaterial.at(instructions[10]),									      // material
 						instructions[3]);														              // name
 
-						sdfScene.sceneElements.emplace(pair <vector<string>, Box>(instructions[3], sdfBox));
+						sdfScene.sceneElements.emplace(instructions[3], sdfBox);
 				}
 
 
@@ -110,7 +110,7 @@ void parse(string const& fileName, Scene sdfScene) {
 					sdfLight.hue = { stof(instructions[6]) ,stof(instructions[7]) ,stof(instructions[8]) };
 					sdfLight.luminance = stoi(instructions[9]);
 
-					sdfScene.lightSources.emplace(std::pair<string, light> (instructions[2],  sdfLight));
+					sdfScene.lightSources.emplace(instructions[2],  sdfLight);
 				}
 
 				else if (instructions[1] == "transform") {
