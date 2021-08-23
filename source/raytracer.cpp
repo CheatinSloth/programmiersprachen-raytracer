@@ -159,7 +159,6 @@ Color raytrace(Ray const& ray, Scene const& sdfScene){
         if (temp.dist < minHit.dist){
             minHit = temp;
         }
-
     }
 
 return final;
