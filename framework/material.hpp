@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include "color.hpp"
+#include "memory"
+
 struct Material {
 
 	friend std::ostream& operator<<(std::ostream& os, std::shared_ptr<Material> const mat) {
