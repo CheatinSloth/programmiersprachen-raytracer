@@ -109,10 +109,10 @@ void parse(string const& fileName, Scene sdfScene) {
 					}
 
 					light sdfLight
-					{ instructions[2],
-					{ stof(instructions[3]) ,stof(instructions[4]) ,stof(instructions[5]) },
-					{ stof(instructions[6]) , stof(instructions[7]) ,stof(instructions[8]) },
-					stoi(instructions[9]) };
+					{ instructions[2],															// name
+					{ stof(instructions[3]) ,stof(instructions[4]) ,stof(instructions[5]) },    // position
+					{ stof(instructions[6]) , stof(instructions[7]) ,stof(instructions[8]) },   // hue
+					stoi(instructions[9]) };													// luminance
 
 					sdfScene.lightSources.emplace(instructions[2],  sdfLight);
 				}
