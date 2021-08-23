@@ -11,7 +11,7 @@
 
 using namespace::std;
 
-
+// Testing for access token 
 //Parser 
 void parse(string const& fileName, Scene sdfScene) {
 	vector<string> instructions;
