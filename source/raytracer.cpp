@@ -147,21 +147,41 @@ void parse(string const& fileName, Scene sdfScene) {
 	file.close();
 }
 
-Color raytrace(Ray const& ray, Scene const& sdfScene){
+HitPoint raytrace(Ray const& ray, Scene const& sdfScene){
 
-    Color final = sdfScene.baseLighting;
     HitPoint temp;
     float dist = INFINITY;
-    HitPoint minHit;
-    for (const auto& [key, value]: sdfScene.sceneElements){
-        temp = value->intersect(ray, dist);
+	HitPoint minHit;
+    for (const auto& [name0, shape]: sdfScene.sceneElements){
+        temp = shape->intersect(ray, dist);
 
         if (temp.dist < minHit.dist){
             minHit = temp;
         }
-    }
+		
+		// Check to see if the intersected point is in shadow
+		if (minHit.hit == true) {
+			float lightDist = INFINITY;
+			Ray hit{ minHit.touchPoint, {0.0f, 0.0f, 0.0f} };
+			for (const auto& [lightName, light] : sdfScene.lightSources) {
+				for (const auto& [name1, shadowShape] : sdfScene.sceneElements) {
+					hit.direction = light.position - hit.origin;
+					HitPoint shadow = shadowShape->intersect(hit, lightDist);
+					
 
-return final;
+					if (shadow.hit == false) {
+						light.luminance;
+					}
+				}
+			}
+		}
+
+	}
+
+	
+
+
+return minHit;
 }
 
 //now single threaded again

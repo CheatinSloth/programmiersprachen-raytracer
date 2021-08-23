@@ -12,6 +12,6 @@ struct HitPoint {
 	float dist{ INFINITY };
 	string shapeName = "null";
 	std::shared_ptr<Material> mat;
-	vec3 touchPoint { 0.0f, 0.0f, -1.0f };
+	vec3 touchPoint { 0.0f, 0.0f, 1.0f }; // visible object will never be at this point 
 	vec3 direction { 0.0f, 0.0f, -1.0f };
 };
