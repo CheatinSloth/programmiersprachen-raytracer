@@ -74,7 +74,7 @@ HitPoint Sphere::intersect(Ray const& r, float& t)
     if(glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_ * radius_, t))
         return HitPoint{true, t, name_, mat_, normalizedDirection*t, normalizedDirection};
     else
-        return HitPoint{ false, t, name_, mat_, normalizedDirection, normalizedDirection };
+        return HitPoint{ false, INFINITY, name_, mat_, normalizedDirection, normalizedDirection };
 }
 
 Box::Box() :

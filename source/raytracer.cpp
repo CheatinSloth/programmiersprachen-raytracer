@@ -44,11 +44,10 @@ void parse(string const& fileName, Scene sdfScene) {
 						break;
 					}
 
-						sdfScene.sceneElements.emplace(instructions[3], new Sphere(
-							{ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) }, // Center
-							stof(instructions[7]),													 // Radius			 
-							sdfScene.sceneMaterial.at(instructions[8]),                              // Material             
-							instructions[3]));                                                       // Name
+						sdfScene.sceneElements.emplace(instructions[3], new Sphere({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },
+							stof(instructions[7]),
+							sdfScene.sceneMaterial.at(instructions[8]),
+							instructions[3]));
 				}
 
 				// Block for creating Shape::Box and adding it to sceneShapes map
@@ -56,13 +55,12 @@ void parse(string const& fileName, Scene sdfScene) {
 					if (instructions.size() != 11) {
 						cout << "Incorrect instruction syntax";
 						break;
-					}			            
-					
-					sdfScene.sceneElements.emplace(instructions[3], new Box(
-						{ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) }, // Min
-						{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) }, // Max	         
-						sdfScene.sceneMaterial.at(instructions[10]),							 // Material			      
-						instructions[3]));                                                       // Name
+					}
+
+					sdfScene.sceneElements.emplace(instructions[3], new Box({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },
+							{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },
+							sdfScene.sceneMaterial.at(instructions[10]),
+							instructions[3]));
 				}
 
 
@@ -72,17 +70,13 @@ void parse(string const& fileName, Scene sdfScene) {
 						cout << "Incorrect instruction syntax";
 						break;
 					}
+					Material sdfMaterial;
+					sdfMaterial.name = instructions[2];
+					sdfMaterial.ka = { stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) };
+					sdfMaterial.kd = { stof(instructions[6]), stof(instructions[7]), stof(instructions[8]) };
+					sdfMaterial.ks = { stof(instructions[9]), stof(instructions[10]), stof(instructions[11]) };
+					sdfMaterial.reflectionExponent = stof(instructions[12]);
 
-<<<<<<< HEAD
-=======
-					Material sdfMaterial  
-					{ instructions[2],															 // Name
-					{ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) },     // ka
-					{ stof(instructions[6]), stof(instructions[7]), stof(instructions[8]) },     // kd 
-					{ stof(instructions[9]), stof(instructions[10]), stof(instructions[11]) },   // ks
-					stof(instructions[12]) };													 // reflection Exponent
-
->>>>>>> 3cb444ce4c1dafb7e24904982cd2b8874ded9611
 					sdfScene.sceneMaterial.emplace(instructions[2], make_shared<Material>(sdfMaterial));
 
 				}
@@ -92,15 +86,13 @@ void parse(string const& fileName, Scene sdfScene) {
 						cout << "Incorrect instruction syntax";
 						break;
 					}
+					Camera sdfCamera;
+					sdfCamera.name = instructions[2];
+					sdfCamera.angle = stof(instructions[3]);
+					sdfCamera.position = { stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) };
+					sdfCamera.direction = { stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) };
+					sdfCamera.up = { stof(instructions[10]), stof(instructions[11]), stof(instructions[12]) };
 
-					Camera sdfCamera
-					{ instructions[2],															 // name
-					stof(instructions[3]),														 // angle
-					{ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },     // position
-					{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },     // direction
-					{ stof(instructions[10]), stof(instructions[11]), stof(instructions[12])},   // up
-					800, 600};																     // resolution
-					
 					sdfScene.sceneCameras.emplace(instructions[2], sdfCamera);
 				}
 
@@ -110,12 +102,11 @@ void parse(string const& fileName, Scene sdfScene) {
 						cout << "Incorrect instruction syntax";
 						break;
 					}
-
-					light sdfLight
-					{ instructions[2],															// name
-					{ stof(instructions[3]) ,stof(instructions[4]) ,stof(instructions[5]) },    // position
-					{ stof(instructions[6]) , stof(instructions[7]) ,stof(instructions[8]) },   // hue
-					stoi(instructions[9]) };													// luminance
+					light sdfLight;
+					sdfLight.name = instructions[2];
+					sdfLight.position = { stof(instructions[3]) ,stof(instructions[4]) ,stof(instructions[5]) };
+					sdfLight.hue = { stof(instructions[6]) ,stof(instructions[7]) ,stof(instructions[8]) };
+					sdfLight.luminance = stoi(instructions[9]);
 
 					sdfScene.lightSources.emplace(instructions[2],  sdfLight);
 				}
@@ -154,6 +145,24 @@ void parse(string const& fileName, Scene sdfScene) {
 		}
 	}
 	file.close();
+}
+
+Color raytrace(Ray const& ray, Scene const& sdfScene){
+
+    Color final = sdfScene.baseLighting;
+    HitPoint temp;
+    float dist = INFINITY;
+    HitPoint minHit;
+    for (const auto& [key, value]: sdfScene.sceneElements){
+        temp = value->intersect(ray, dist);
+
+        if (temp.dist < minHit.dist){
+            minHit = temp;
+        }
+
+    }
+
+return final;
 }
 
 //now single threaded again
