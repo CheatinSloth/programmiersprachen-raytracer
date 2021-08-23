@@ -77,7 +77,7 @@ void parse(string const& fileName, Scene sdfScene) {
 					sdfMaterial.ks = { stof(instructions[9]), stof(instructions[10]), stof(instructions[11]) };
 					sdfMaterial.reflectionExponent = stof(instructions[12]);
 
-					sdfScene.sceneMaterial.emplace(instructions[2], sdfMaterial);
+					sdfScene.sceneMaterial.emplace(instructions[2], make_shared<Material>(sdfMaterial));
 
 				}
 				// Block for creating Camera and adding it to sceneCameras map
@@ -168,4 +168,9 @@ int main(int argc, char* argv[])
   }
 
   return 0;
+}
+
+
+void raytracing(Scene sdfscene){
+
 }
