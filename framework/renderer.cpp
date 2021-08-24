@@ -64,13 +64,34 @@ Color shade(HitPoint const& shadePoint, Scene const& sdfScene) {
         shadePoint.mat->ka.b * sdfScene.baseLighting.b
     };
     
+    float dist;
     Ray shadowRay{ shadePoint.touchPoint, {0.0f, 0.0f, 0.0f} };
 
     for (const auto& [lightName, light] : sdfScene.lightSources) {
 
         shadowRay.direction = light.position - shadowRay.origin;
 
+        for (const auto& [name, shape] : sdfScene.sceneElements) {
+            HitPoint intersectPoint = shape->intersect(shadowRay, dist);
+            if (intersectPoint.hit == true) {
+                break;
+            }
+            else {
+                // Lambert Rule (is this the right place for this?)
+                vec3 shadowRayNormal = glm::normalize(shadowRay.direction);
+                vec3 norm = shadePoint.normal;
+
+                finalShade.r += light.luminance * shadePoint.mat->kd.r * (glm::dot(shadowRayNormal, norm));
+                finalShade.g += light.luminance * shadePoint.mat->kd.g * (glm::dot(shadowRayNormal, norm));
+                finalShade.b += light.luminance * shadePoint.mat->kd.b * (glm::dot(shadowRayNormal, norm));
+            }
+        }
     }
+    // HDR Color correcting
+
+    finalShade.r = finalShade.r / (finalShade.r + 1);
+    finalShade.g = finalShade.g / (finalShade.g + 1);
+    finalShade.b = finalShade.b / (finalShade.b + 1);
 
     return finalShade;
 }
