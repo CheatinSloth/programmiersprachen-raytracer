@@ -181,9 +181,6 @@ Color raytrace(Ray const& ray, Scene const& sdfScene){
 					
 					// Find potential intersection to current lightsource
 					shadow = shadowShape->intersect(shadowRay, lightDist);
-					
-					if (lightDist < closestShadow)
-						closestShadow = lightDist;
 
 					if (shadow.hit == false) {
 						light.luminance;
@@ -198,11 +195,6 @@ Color raytrace(Ray const& ray, Scene const& sdfScene){
 			
 
 	}
-
-	
-
-
-return minHit;
 }
 
 //now single threaded again
