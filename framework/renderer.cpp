@@ -53,16 +53,41 @@ void Renderer::write(Pixel const& p)
   ppm_.write(p);
 }
 
-// TODO: Offset 
+// TODO: Offset ?
 // TODO: Trace algo
-// TODO: Shade algo
+// TODO: shadowtrace algo
 
-Color trace(Ray const& ray, Scene const& sdfScene) {
+Color shade(HitPoint const& shadePoint, Scene const& sdfScene) {
+    Color finalShade{
+        shadePoint.mat->ka.r * sdfScene.baseLighting.r,
+        shadePoint.mat->ka.g * sdfScene.baseLighting.g,
+        shadePoint.mat->ka.b * sdfScene.baseLighting.b
+    };
+    
+    Ray shadowRay{ shadePoint.touchPoint, {0.0f, 0.0f, 0.0f} };
+
+    for (const auto& [lightName, light] : sdfScene.lightSources) {
+
+        shadowRay.direction = light.position - shadowRay.origin;
+
+    }
+
+    return finalShade;
+}
+
+Color raytrace(Ray const& ray, Scene const& sdfScene) {
     HitPoint temp;
     float dist = INFINITY;
     HitPoint minHit;
 
     for (const auto& [name, shape] : sdfScene.sceneElements) {
         temp = shape->intersect(ray, dist);
+        if (temp.dist < minHit.dist) {
+            minHit = temp;
+        }
+
+        if (minHit.hit == true) {
+            Color finalShade = shade(minHit, sdfScene);
+        }
     }
 }
