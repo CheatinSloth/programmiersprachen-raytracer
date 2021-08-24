@@ -4,10 +4,11 @@
 #include <thread>
 #include <utility>
 #include <cmath>
-#include <fstream>
+#include <fstream>  // Necessary for file reading
+#include <sstream>  // Necessary for tokenizing lines
 #include "scene.hpp"
 #include "shape.hpp"
-#include "sstream"
+
 
 using namespace::std;
 
@@ -20,15 +21,19 @@ void parse(string const& fileName, Scene sdfScene) {
 	string line; // Individual Lines
 	string token; // Individual strings of each line
 
+	// Open file 
 	file.open(fileName, ios::in);
 	if (file.is_open()) {
 		cout << "File has been opened" << endl;
 
-		// Filling vector over stringstream with each instruction of line
+		// Fills a vector with individual strings of each word in line 
 		while (getline(file, line)) {
 			stringstream lineStream(line);
+
+			// In case vector is full from last reading, vector is cleared
 			instructions.clear();
 
+			// Push individual word (token) into vector 
 			while (lineStream >> token) {
 				instructions.push_back(token);
 			}
@@ -44,10 +49,11 @@ void parse(string const& fileName, Scene sdfScene) {
 						break;
 					}
 
-						sdfScene.sceneElements.emplace(instructions[3], new Sphere({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },
-							stof(instructions[7]),
-							sdfScene.sceneMaterial.at(instructions[8]),
-							instructions[3]));
+						sdfScene.sceneElements.emplace(instructions[3],												// Places sphere at name
+							new Sphere({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },     // Center
+								stof(instructions[7]),																// Radius
+								sdfScene.sceneMaterial.at(instructions[8]),											// Material
+								instructions[3]));																	// Name
 				}
 
 				// Block for creating Shape::Box and adding it to sceneShapes map
@@ -57,10 +63,11 @@ void parse(string const& fileName, Scene sdfScene) {
 						break;
 					}
 
-					sdfScene.sceneElements.emplace(instructions[3], new Box({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },
-							{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },
-							sdfScene.sceneMaterial.at(instructions[10]),
-							instructions[3]));
+					sdfScene.sceneElements.emplace(instructions[3],													// Places Box at name
+						new Box({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },			// min
+								{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },			// max
+								sdfScene.sceneMaterial.at(instructions[10]),										// Material
+								instructions[3]));																	// name
 				}
 
 
@@ -70,12 +77,12 @@ void parse(string const& fileName, Scene sdfScene) {
 						cout << "Incorrect instruction syntax";
 						break;
 					}
-					Material sdfMaterial;
-					sdfMaterial.name = instructions[2];
-					sdfMaterial.ka = { stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) };
-					sdfMaterial.kd = { stof(instructions[6]), stof(instructions[7]), stof(instructions[8]) };
-					sdfMaterial.ks = { stof(instructions[9]), stof(instructions[10]), stof(instructions[11]) };
-					sdfMaterial.reflectionExponent = stof(instructions[12]);
+					Material sdfMaterial{
+						instructions[2],																			// name
+						{ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) },					// ka
+						{ stof(instructions[6]), stof(instructions[7]), stof(instructions[8]) },					// kd
+						{ stof(instructions[9]), stof(instructions[10]), stof(instructions[11]) },					// ks
+						stof(instructions[12]) };																	// reflectionExponent
 
 					sdfScene.sceneMaterial.emplace(instructions[2], make_shared<Material>(sdfMaterial));
 
@@ -86,12 +93,14 @@ void parse(string const& fileName, Scene sdfScene) {
 						cout << "Incorrect instruction syntax";
 						break;
 					}
-					Camera sdfCamera;
-					sdfCamera.name = instructions[2];
-					sdfCamera.angle = stof(instructions[3]);
-					sdfCamera.position = { stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) };
-					sdfCamera.direction = { stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) };
-					sdfCamera.up = { stof(instructions[10]), stof(instructions[11]), stof(instructions[12]) };
+					Camera sdfCamera{
+						instructions[2],																			// name
+						stof(instructions[3]),																		// angle
+						{ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },					// position
+						{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },					// direction
+						{ stof(instructions[10]), stof(instructions[11]), stof(instructions[12]) },					// up
+						800,																						// resolutionV
+						600 };																						// resolutionH
 
 					sdfScene.sceneCameras.emplace(instructions[2], sdfCamera);
 				}
@@ -102,25 +111,31 @@ void parse(string const& fileName, Scene sdfScene) {
 						cout << "Incorrect instruction syntax";
 						break;
 					}
-					light sdfLight;
-					sdfLight.name = instructions[2];
-					sdfLight.position = { stof(instructions[3]) ,stof(instructions[4]) ,stof(instructions[5]) };
-					sdfLight.hue = { stof(instructions[6]) ,stof(instructions[7]) ,stof(instructions[8]) };
-					sdfLight.luminance = stoi(instructions[9]);
+
+					// not being displayed as 
+					light sdfLight{
+						instructions[2],																			// name								
+						{ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) },					// position
+						{ stof(instructions[6]) ,stof(instructions[7]) ,stof(instructions[8]) },					// hue
+						stoi(instructions[9]) };																	// luminance
+					
 
 					sdfScene.lightSources.emplace(instructions[2],  sdfLight);
 				}
 
+				// TODO: Implement transformations + parsing
 				else if (instructions[1] == "transform") {
 					if (instructions[2] == "scale") {}
 					if (instructions[2] == "translate") {}
 					if (instructions[2] == "rotate") {}
 				}
+
 				// Check for comment to simply skip line
 				else if (instructions[1] == "#") {
 					continue;
 				}
 
+				// No matching term will end loop
 				else {
 					cout << "Incorrect instruction " << instructions[1] << " in File";
 					break;
@@ -182,6 +197,7 @@ Color raytrace(Ray const& ray, Scene const& sdfScene){
 					// Find potential intersection to current lightsource
 					shadow = shadowShape->intersect(shadowRay, lightDist);
 
+					// Summarization of all contributing light sources
 					if (shadow.hit == false) {
 						light.luminance;
 					}
