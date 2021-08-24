@@ -18,7 +18,7 @@ Renderer::Renderer(unsigned w, unsigned h, std::string const& file)
   , ppm_(width_, height_)
 {}
 
-void Renderer::render()
+void Renderer::render(Scene const& scene)
 {
   std::size_t const checker_pattern_size = 20;
 
@@ -57,7 +57,7 @@ void Renderer::write(Pixel const& p)
 // TODO: Trace algo
 // TODO: shadowtrace algo
 
-Color shade(HitPoint const& shadePoint, Scene const& sdfScene) {
+Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
     Color finalShade{
         shadePoint.mat->ka.r * sdfScene.baseLighting.r,
         shadePoint.mat->ka.g * sdfScene.baseLighting.g,
@@ -77,9 +77,10 @@ Color shade(HitPoint const& shadePoint, Scene const& sdfScene) {
                 break;
             }
             else {
+
                 // Lambert Rule (is this the right place for this?)
                 vec3 shadowRayNormal = glm::normalize(shadowRay.direction);
-                vec3 norm = shadePoint.normal;
+                vec3 norm = glm::normalize(shadePoint.normal);
 
                 finalShade.r += light.luminance * shadePoint.mat->kd.r * (glm::dot(shadowRayNormal, norm));
                 finalShade.g += light.luminance * shadePoint.mat->kd.g * (glm::dot(shadowRayNormal, norm));

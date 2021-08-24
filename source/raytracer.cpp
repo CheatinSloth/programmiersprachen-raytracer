@@ -170,6 +170,9 @@ int main(int argc, char* argv[])
 
   Renderer renderer{image_width, image_height, filename};
 
+  Scene scene;
+  parse("test.sdf", scene);
+
   renderer.render();
 
   Window window{{image_width, image_height}};
