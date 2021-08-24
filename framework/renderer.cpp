@@ -53,9 +53,17 @@ void Renderer::write(Pixel const& p)
   ppm_.write(p);
 }
 
-// TODO: Offset ?
-// TODO: Trace algo
-// TODO: shadowtrace algo
+////////////////////////
+/*
+ TODO: 
+ - Eine Test SDF zu rendern wär vllt sinnvoll
+ - Ich hab das Gefühl dass shade() und raytrace() grundsätzlich stimmen, aber mag sein dass bei
+ den Normalisierungen bzw Richtungen der Vektoren Schusselfehler drin sein könnten
+ - Distance vergleich zwischen Lichtquelle und Objekt fehlt, könnten noch einbauen, dass Lichtquelle näher als Objekt trotzdem beleuchtet 
+ - Erweiterungen für Reflektion/Refraktion könnten wir vielleicht einbauen, falls Testrender erfolgreich ist
+ - Transform Methoden wären auch sinnvoll
+
+*/
 
 Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
     Color finalShade{
@@ -68,11 +76,14 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
     Ray shadowRay{ shadePoint.touchPoint, {0.0f, 0.0f, 0.0f} };
 
     for (const auto& [lightName, light] : sdfScene.lightSources) {
-
+        // Direction to light
         shadowRay.direction = light.position - shadowRay.origin;
-
         for (const auto& [name, shape] : sdfScene.sceneElements) {
+
+            // Checking if any light is obscured by other shape
             HitPoint intersectPoint = shape->intersect(shadowRay, dist);
+
+            // Ignoring luminance of obscured light
             if (intersectPoint.hit == true) {
                 break;
             }
@@ -82,6 +93,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
                 vec3 shadowRayNormal = glm::normalize(shadowRay.direction);
                 vec3 norm = glm::normalize(shadePoint.normal);
 
+                // Summation of all visible light intensities using normalized simple lighting (I = I_p * k_d * (n * I))
                 finalShade.r += light.luminance * shadePoint.mat->kd.r * (glm::dot(shadowRayNormal, norm));
                 finalShade.g += light.luminance * shadePoint.mat->kd.g * (glm::dot(shadowRayNormal, norm));
                 finalShade.b += light.luminance * shadePoint.mat->kd.b * (glm::dot(shadowRayNormal, norm));
