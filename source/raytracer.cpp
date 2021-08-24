@@ -161,54 +161,6 @@ void parse(string const& fileName, Scene sdfScene) {
 	file.close();
 }
 
-/*Color raytrace(Ray const& ray, Scene const& sdfScene){
-
-    HitPoint temp;
-    float dist = INFINITY;
-	HitPoint minHit;
-
-	// Checks for each shape if an intersection point is found
-    for (const auto& [name0, shape]: sdfScene.sceneElements){
-
-        temp = shape->intersect(ray, dist);
-
-        if (temp.dist < minHit.dist){
-            minHit = temp;
-        }
-		
-		// Check to see if the intersected point is in shadow
-		if (minHit.hit == true) {
-			HitPoint shadow;
-			
-			// Creating Ray and distance for shadow tracing
-			float lightDist = INFINITY;
-			float closestShadow = INFINITY;
-
-			Ray shadowRay{ minHit.touchPoint, {0.0f, 0.0f, 0.0f} };
-			
-			// Renewed iteration over each object as well as light source to find any blocking (shadow-casting) objects
-			for (const auto& [lightName, light] : sdfScene.lightSources) {
-				for (const auto& [name1, shadowShape] : sdfScene.sceneElements) {
-					
-					// Create normalized direction vector for current light source 
-					shadowRay.direction = glm::normalize(light.position - shadowRay.origin);
-					
-					// Find potential intersection to current lightsource
-					shadow = shadowShape->intersect(shadowRay, lightDist);
-
-					// Summation of all contributing light sources
-					if (shadow.hit == false) {
-						light.luminance;
-					}
-				}
-			}
-		}
-		else {
-			return sdfScene.baseLighting;
-		}
-	}
-}
-*/
 //now single threaded again
 int main(int argc, char* argv[])
 {

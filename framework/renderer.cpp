@@ -100,7 +100,7 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
     HitPoint temp;
     float dist = INFINITY;
     HitPoint minHit;
-    Color finalShade;
+    Color finalShade{sdfScene.baseLighting};
 
     for (const auto& [name, shape] : sdfScene.sceneElements) {
         temp = shape->intersect(ray, dist);
