@@ -9,6 +9,7 @@
 
 #include "renderer.hpp"
 
+
 Renderer::Renderer(unsigned w, unsigned h, std::string const& file)
   : width_(w)
   , height_(h)
@@ -50,4 +51,18 @@ void Renderer::write(Pixel const& p)
   }
 
   ppm_.write(p);
+}
+
+// TODO: Offset 
+// TODO: Trace algo
+// TODO: Shade algo
+
+Color trace(Ray const& ray, Scene const& sdfScene) {
+    HitPoint temp;
+    float dist = INFINITY;
+    HitPoint minHit;
+
+    for (const auto& [name, shape] : sdfScene.sceneElements) {
+        temp = shape->intersect(ray, dist);
+    }
 }

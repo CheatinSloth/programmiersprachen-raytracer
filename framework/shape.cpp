@@ -164,6 +164,7 @@ HitPoint Box::intersect(Ray const& r, float& t) {
             }
         }
     }
+
     t = shortest_dis;
     glm::vec3 point = r.origin + t * r.direction;
 

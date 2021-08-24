@@ -59,7 +59,6 @@ public:
     std::ostream& print(std::ostream& os) const override;
     HitPoint intersect(Ray const& ray, float& t) override;
 
-
 protected:
     vec3 min_;
     vec3 max_;

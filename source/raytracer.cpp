@@ -161,7 +161,7 @@ void parse(string const& fileName, Scene sdfScene) {
 	file.close();
 }
 
-Color raytrace(Ray const& ray, Scene const& sdfScene){
+/*Color raytrace(Ray const& ray, Scene const& sdfScene){
 
     HitPoint temp;
     float dist = INFINITY;
@@ -196,7 +196,7 @@ Color raytrace(Ray const& ray, Scene const& sdfScene){
 					// Find potential intersection to current lightsource
 					shadow = shadowShape->intersect(shadowRay, lightDist);
 
-					// Summarization of all contributing light sources
+					// Summation of all contributing light sources
 					if (shadow.hit == false) {
 						light.luminance;
 					}
@@ -205,13 +205,10 @@ Color raytrace(Ray const& ray, Scene const& sdfScene){
 		}
 		else {
 			return sdfScene.baseLighting;
-
 		}
-			
-
 	}
 }
-
+*/
 //now single threaded again
 int main(int argc, char* argv[])
 {

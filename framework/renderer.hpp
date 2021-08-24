@@ -13,6 +13,8 @@
 #include "color.hpp"
 #include "pixel.hpp"
 #include "ppmwriter.hpp"
+#include "scene.hpp"
+#include "shape.hpp"
 #include <string>
 #include <glm/glm.hpp>
 
