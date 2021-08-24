@@ -112,7 +112,6 @@ void parse(string const& fileName, Scene sdfScene) {
 						break;
 					}
 
-					// not being displayed as 
 					light sdfLight{
 						instructions[2],																			// name								
 						{ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) },					// position
