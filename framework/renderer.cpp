@@ -137,14 +137,25 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
     return finalShade;
 }
 
+Ray transformRay(glm::mat4 const& mat, Ray const& ray)
+{
+    glm::vec4 origin{ ray.origin, 1.f };
+    glm::vec4 direction{ ray.direction, 0.f };
+
+    vec3 transOrigin{ origin * mat };
+    vec3 transDirection{ direction * mat };
+
+    return Ray{transOrigin, transDirection};
+}
+
 Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {
     vec3 dir{
         ((1.f / width_) * p.x),
         ((1.f / height_) * p.y),
-        distance
+        -distance
     };
 
-    return Ray{};
+    return Ray{ { 0.f,0.f,0.f }, {dir} };
 }
 
 // Data pipeline (in my head): sdf file->parser->raytrace->shade->renderer

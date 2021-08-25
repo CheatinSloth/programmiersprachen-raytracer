@@ -12,6 +12,7 @@
 
 using std::string;
 using glm::vec3;
+using glm::mat4;
 
 class Shape {
 	
@@ -27,6 +28,8 @@ public:
 protected: 
     string name_;
     std::shared_ptr<Material> mat_;
+    mat4 world_transformation_;
+    mat4 world_transformation_inv_;
 };
 
 class Sphere : public Shape {
