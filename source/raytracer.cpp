@@ -155,6 +155,7 @@ void parse(string const& fileName, Scene sdfScene) {
 			}
 
 			else if (instructions[0] == "render") {
+			cout << "Starting render" << endl;
 			Renderer renderer{ stoul(instructions[3]), stoul(instructions[4]), instructions[2] };
 			renderer.render(sdfScene, sdfScene.sceneCameras.at(instructions[1]));
 			}
