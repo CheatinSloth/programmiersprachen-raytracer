@@ -18,7 +18,7 @@ Renderer::Renderer(unsigned w, unsigned h, std::string const& file)
   , ppm_(width_, height_)
 {}
 
-void Renderer::render(Scene const& scene)
+void Renderer::render(Scene const& scene, Camera const& camera)
 {
   std::size_t const checker_pattern_size = 20;
 
@@ -33,6 +33,7 @@ void Renderer::render(Scene const& scene)
         // p.color = Color{raytrace(ray??, scene)
       }
 
+      p.color = raytrace();
       write(p);
     }
   }
@@ -51,7 +52,6 @@ void Renderer::write(Pixel const& p)
   } else {
     color_buffer_[buf_pos] = p.color;
   }
-
   ppm_.write(p);
 }
 

@@ -23,9 +23,9 @@ class Renderer
 public:
   Renderer(unsigned w, unsigned h, std::string const& file);
 
-  void render(Scene const& scene);
+  void render(Scene const& scene, Camera const& camera);
   void write(Pixel const& p);
-
+  Ray make_cam_ray(Pixel const& p, Camera const& camera, float distance);
   inline std::vector<Color> const& color_buffer() const
   {
     return color_buffer_;

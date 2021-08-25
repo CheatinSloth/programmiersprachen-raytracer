@@ -153,6 +153,8 @@ void parse(string const& fileName, Scene sdfScene) {
 			}
 
 			else if (instructions[0] == "render") {
+			Renderer renderer{ stoi(instructions[3]), stoi(instructions[4]), instructions[2] };
+			renderer.render(sdfScene, sdfScene.sceneCameras.at(instructions[1]));
 			}
 
 			// Missing "define" terminates program
@@ -179,8 +181,6 @@ int main(int argc, char* argv[])
 
   Scene scene;
   parse("test.sdf", scene);
-
-  renderer.render(scene);
 
   Window window{{image_width, image_height}};
 
