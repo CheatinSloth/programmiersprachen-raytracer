@@ -129,11 +129,12 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
         if (temp.dist < minHit.dist) {
             minHit = temp;
         }
-
-        if (minHit.hit == true) {
-            finalShade = shade(minHit, sdfScene);
-        }
     }
+
+    if (minHit.hit == true) {
+        return finalShade = shade(minHit, sdfScene);
+    }
+    else
     return finalShade;
 }
 

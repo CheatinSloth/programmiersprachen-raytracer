@@ -203,6 +203,7 @@ int main(int argc, char* argv[])
   Renderer renderer{image_width, image_height, filename};
 
   Scene scene;
+  scene.baseLighting = { 0.f, 1.f, 0.f };
   parse("test.sdf", scene);
 
   Window window{{image_width, image_height}};

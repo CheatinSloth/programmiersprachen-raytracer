@@ -77,11 +77,6 @@ HitPoint Sphere::intersect(Ray const& r, float& t)
         return HitPoint{ false, INFINITY, name_, mat_, normalizedDirection, normalizedDirection };
 }
 
-void const Sphere::translate(vec3 translation)
-{
-    radius_ = translate_vec(radius_, translation);
-}
-
 Box::Box() :
 Shape(),
 min_ { 5.0f, 5.0f, 5.0f },
