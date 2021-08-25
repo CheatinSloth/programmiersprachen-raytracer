@@ -33,7 +33,7 @@ void Renderer::render(Scene const& scene, Camera const& camera)
         // p.color = Color{raytrace(ray??, scene)
       }
 
-      p.color = raytrace();
+      p.color = raytrace(make_cam_ray(p, camera, camera.dist()), scene);
       write(p);
     }
   }

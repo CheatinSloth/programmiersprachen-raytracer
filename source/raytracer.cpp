@@ -9,12 +9,12 @@
 #include "scene.hpp"
 #include "shape.hpp"
 
-
 using namespace::std;
 
 // Testing for access token 
 //Parser 
 void parse(string const& fileName, Scene sdfScene) {
+	cout << "Parsing started" << endl;
 	vector<string> instructions;
 
 	fstream file; // SDF File
@@ -22,7 +22,7 @@ void parse(string const& fileName, Scene sdfScene) {
 	string token; // Individual strings of each line
 
 	// Open file 
-	file.open(fileName, ios::in);
+	file.open(fileName);
 	if (file.is_open()) {
 		cout << "File has been opened" << endl;
 
@@ -40,12 +40,12 @@ void parse(string const& fileName, Scene sdfScene) {
 
 			// Check to see if object should be initialized
 			if (instructions[0] == "define") {
-				cout << "Attempting to create " << instructions[1];
+				cout << "Attempting to create " << instructions[1] << endl;
 
 				// Block for creating Shape::Sphere and adding it to sceneShapes map
 				if (instructions[1] == "shape" && instructions[2] == "sphere") {
 					if (instructions.size() != 9) {
-						cout << "Incorrect instruction syntax";
+						cout << "Incorrect instruction syntax. Sphere::Shape requires 9 tokens." << endl;
 						break;
 					}
 
@@ -59,7 +59,7 @@ void parse(string const& fileName, Scene sdfScene) {
 				// Block for creating Shape::Box and adding it to sceneShapes map
 				else if (instructions[1] == "shape" && instructions[2] == "box") {
 					if (instructions.size() != 11) {
-						cout << "Incorrect instruction syntax";
+						cout << "Incorrect instruction syntax. Box::Shape requires 11 tokens." << endl;
 						break;
 					}
 
@@ -74,7 +74,7 @@ void parse(string const& fileName, Scene sdfScene) {
 				// Block for creating Material and adding it to sceneMaterials map
 				else if (instructions[1] == "material") {
 					if (instructions.size() != 13) {
-						cout << "Incorrect instruction syntax";
+						cout << "Incorrect instruction syntax. Material requires 13 tokens." << endl;
 						break;
 					}
 					Material sdfMaterial{
@@ -89,26 +89,35 @@ void parse(string const& fileName, Scene sdfScene) {
 				}
 				// Block for creating Camera and adding it to sceneCameras map
 				else if (instructions[1] == "camera") {
-					if (instructions.size() != 13) {
-						cout << "Incorrect instruction syntax";
-						break;
-					}
-					Camera sdfCamera{
-						instructions[2],																			// name
-						stof(instructions[3]),																		// angle
-						{ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },					// position
-						{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },					// direction
-						{ stof(instructions[10]), stof(instructions[11]), stof(instructions[12]) },					// up
-						800,																						// resolutionV
-						600 };																						// resolutionH
+					if (instructions.size() == 13) {
+						Camera sdfCamera{
+							instructions[2],																			// name
+							stof(instructions[3]),																		// angle
+							{ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },					// position
+							{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },					// direction
+							{ stof(instructions[10]), stof(instructions[11]), stof(instructions[12]) },					// up
+							800,																						// resolutionV
+							600 };																						// resolutionH
 
-					sdfScene.sceneCameras.emplace(instructions[2], sdfCamera);
+						sdfScene.sceneCameras.emplace(instructions[2], sdfCamera);
+					}
+
+					if (instructions.size() == 4) {
+						Camera sdfCamera;
+						sdfCamera.angle = stof(instructions[3]);
+						sdfCamera.name = instructions[2];
+						sdfScene.sceneCameras.emplace(instructions[2], sdfCamera);
+					}
+					else {
+						cout << "Incorrect instruction syntax. Camera requires 4 or 13 tokens." << endl;
+					}
+
 				}
 
 				// Block for creating light source and adding it to lightsource map
 				else if (instructions[1] == "light") {
 					if (instructions.size() != 10) {
-						cout << "Incorrect instruction syntax";
+						cout << "Incorrect instruction syntax. Light requires 10 tokens." << endl;
 						break;
 					}
 
@@ -127,12 +136,7 @@ void parse(string const& fileName, Scene sdfScene) {
 					if (instructions[2] == "scale") {}
 					if (instructions[2] == "translate") {}
 					if (instructions[2] == "rotate") {}
-				}
-
-				// Check for comment to simply skip line
-				else if (instructions[1] == "#") {
-					continue;
-				}
+				}			
 
 				// No matching term will end loop
 				else {
@@ -141,30 +145,34 @@ void parse(string const& fileName, Scene sdfScene) {
 				}
 			}
 
-
-
 			// Set ambient lighting
 			else if (instructions[0] == "ambient") {
 				if (instructions.size() != 4) {
-					cout << "Incorrect instruction syntax";
+					cout << "Incorrect instruction syntax. Shape requires 4 tokens." << endl;
 					break;
 				}
 				sdfScene.baseLighting = { stof(instructions[1]), stof(instructions[2]), stof(instructions[3]) };
 			}
 
 			else if (instructions[0] == "render") {
-			Renderer renderer{ stoi(instructions[3]), stoi(instructions[4]), instructions[2] };
+			Renderer renderer{ stoul(instructions[3]), stoul(instructions[4]), instructions[2] };
 			renderer.render(sdfScene, sdfScene.sceneCameras.at(instructions[1]));
+			}
+
+			// Check for comment to simply skip line
+			else if (instructions[0] == "#") {
+			continue;
 			}
 
 			// Missing "define" terminates program
 			else {
-				cout << "Incorrect instruction in File";
+				cout << "Incorrect instruction in File: '" << instructions[0] << "' is not a valid token" << endl;
 				break;
 			}
 		}
 			
 	}
+	cout << "Parsing complete" << endl;
 	file.close();
 }
 
@@ -180,6 +188,8 @@ int main(int argc, char* argv[])
   Renderer renderer{image_width, image_height, filename};
 
   Scene scene;
+  cout << "scene created";
+  cout << "starting parse";
   parse("test.sdf", scene);
 
   Window window{{image_width, image_height}};

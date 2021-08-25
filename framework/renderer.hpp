@@ -39,4 +39,7 @@ private:
   PpmWriter ppm_;
 };
 
+Color shade(HitPoint& shadePoint, Scene const& sdfScene);
+Color raytrace(Ray const& ray, Scene const& sdfScene);
+
 #endif // #ifndef BUW_RENDERER_HPP
