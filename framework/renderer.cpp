@@ -148,6 +148,55 @@ Ray transformRay(glm::mat4 const& mat, Ray const& ray)
     return Ray{transOrigin, transDirection};
 }
 
+mat4 translate(vec3 translation)
+{
+    glm::vec4 translation4{ translation, 1.f };
+    mat4 result;
+
+    result[0] = { 1.f, 0.f, 0.f, 0.f };
+    result[1] = { 0.f, 1.f, 0.f, 0.f };
+    result[2] = { 0.f, 0.f, 1.f, 0.f };
+    result[3] = { translation4 };
+
+    return result;
+}
+
+mat4 scale(vec3 scale)
+{
+    mat4 result;
+    result[0] = { scale.x, 0.f, 0.f, 0.f };
+    result[1] = { 0.f, scale.y, 0.f, 0.f };
+    result[2] = { 0.f, 0.f, scale.z, 0.f };
+    result[3] = { 0.f, 0.f, 0.f, 1.f };
+
+    return result;
+}
+
+mat4 rotate(float angle, vec3 axis)
+{
+    mat4 result;
+
+    if (axis.x == 1.f && axis.y == 0 && axis.z == 0) {
+        result[0] = { 1.f, 0.f, 0.f, 0.f };
+        result[1] = { 0.f, cos(angle / 2.f * M_PI / 180.f), sin(angle / 2.f * M_PI / 180.f), 0.f };
+        result[2] = { 0.f, -sin(angle / 2.f * M_PI / 180.f), cos(angle / 2.f * M_PI / 180.f), 0.f };
+        result[3] = { 0.f, 0.f, 0.f, 1.f };
+    }
+    if (axis.x == 0 && axis.y == 1.f && axis.z == 0) {
+        result[0] = { 0.f, cos(angle / 2.f * M_PI / 180.f), -sin(angle / 2.f * M_PI / 180.f), 0.f };
+        result[1] = { 0.f, 1.f, 0.f, 0.f };
+        result[2] = { 0.f, sin(angle / 2.f * M_PI / 180.f), cos(angle / 2.f * M_PI / 180.f), 0.f };
+        result[3] = { 0.f, 0.f, 0.f, 1.f };
+    }
+    if (axis.x == 0 && axis.y == 0 && axis.z == 1.f) {
+        result[0] = { 0.f, cos(angle / 2.f * M_PI / 180.f), sin(angle / 2.f * M_PI / 180.f), 0.f };
+        result[1] = { 0.f, -sin(angle / 2.f * M_PI / 180.f), cos(angle / 2.f * M_PI / 180.f), 0.f };
+        result[2] = { 0.f, 0.f, 1.f, 0.f };
+        result[3] = { 0.f, 0.f, 0.f, 1.f };
+    }
+    return result;
+}
+
 Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {
     vec3 dir{
         ((1.f / width_) * p.x),

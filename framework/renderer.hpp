@@ -42,4 +42,10 @@ private:
 Color shade(HitPoint& shadePoint, Scene const& sdfScene);
 Color raytrace(Ray const& ray, Scene const& sdfScene);
 
+
+// Transformations
+Ray transformRay(glm::mat4 const& mat, Ray const& ray);
+mat4 translate(vec3 translation);
+mat4 scale(vec3 scale);
+mat4 rotate(float angle, vec3 direction);
 #endif // #ifndef BUW_RENDERER_HPP
