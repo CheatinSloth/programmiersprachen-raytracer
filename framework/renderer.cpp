@@ -203,8 +203,9 @@ Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance)
         ((1.f / height_) * p.y),
         -distance
     };
+    mat4 camTrans{ camera.transform() };
 
-    return Ray{ { 0.f,0.f,0.f }, {dir} };
+    return Ray{ transformRay(camTrans, {{0.f, 0.f, 0.f}, {dir}}) };
 }
 
 // Data pipeline (in my head): sdf file->parser->raytrace->shade->renderer

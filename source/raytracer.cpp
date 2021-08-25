@@ -189,8 +189,6 @@ int main(int argc, char* argv[])
   Renderer renderer{image_width, image_height, filename};
 
   Scene scene;
-  cout << "scene created";
-  cout << "starting parse";
   parse("test.sdf", scene);
 
   Window window{{image_width, image_height}};
