@@ -68,13 +68,26 @@ std::ostream& Sphere::print(std::ostream& os) const
     return os;
 }
 
-HitPoint Sphere::intersect(Ray const& r, float& t)
+HitPoint const Sphere::intersect(Ray const& r, float& t)
 {
-    vec3 normalizedDirection = glm::normalize(r.direction);
-    if(glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_ * radius_, t))
-        return HitPoint{true, t, name_, mat_, normalizedDirection*t, normalizedDirection};
+    Ray rayTrans{transformRay(world_transformation_inv_, r)};
+    vec3 normalizedDirection = glm::normalize(rayTrans.direction);
+
+    if (glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_ * radius_, t)) {
+        vec3 touch = {rayTrans.origin + t * normalizedDirection};
+
+        t /= sqrt(glm::dot(rayTrans.direction, rayTrans.direction));
+
+        vec3 normalVec{touch - center_};
+
+        mat4 transp = glm::transpose(world_transformation_inv_);
+        vec3 normalTrans(transp * glm::vec4{ normalVec.x, normalVec.y, normalVec.z, 0.f });
+        normalVec = glm::normalize(normalTrans);
+
+        return HitPoint{ true, t, name_, mat_, touch, normalizedDirection, normalVec };
+    }
     else
-        return HitPoint{ false, INFINITY, name_, mat_, normalizedDirection, normalizedDirection };
+        return HitPoint{};
 }
 
 Box::Box() :
@@ -117,67 +130,110 @@ float const Box::volume()
     return h*w*l;
 }
 
-HitPoint Box::intersect(Ray const& r, float& t) {
+HitPoint const Box::intersect(Ray const& r, float& t) {
+    Ray rayTrans{ transformRay(world_transformation_inv_, r) };
     float shortest_dis = INFINITY;
     float distances[6];
 
+    // left
     float x_min = min_.x;
     t = (x_min - r.origin.x) / r.direction.x;
     glm::vec3 point_x_min = r.origin + t * r.direction;
     glm::vec3 vec = point_x_min - r.origin;
     distances[0] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
+    // right
     float x_max = max_.x;
     t = (x_max - r.origin.x) / r.direction.x;
     glm::vec3 point_x_max = r.origin + t * r.direction;
     vec = point_x_max - r.origin;
     distances[1] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
+    // front
     float y_min = min_.y;
     t = (y_min - r.origin.y) / r.direction.y;
     glm::vec3 point_y_min = r.origin + t * r.direction;
     vec = point_y_min - r.origin;
     distances[2] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
+    // back
     float y_max = max_.y;
     t = (y_max - r.origin.y) / r.direction.y;
     glm::vec3 point_y_max = r.origin + t * r.direction;
     vec = point_y_max - r.origin;
     distances[3] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
+    // bottom
     float z_min = min_.z;
     t = (z_min - r.origin.z) / r.direction.z;
     glm::vec3 point_z_min = r.origin + t * r.direction;
     vec = point_z_min - r.origin;
     distances[4] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
-    float z_max =max_.z;
+    // top 
+    float z_max = max_.z;
     t = (z_max - r.origin.z) / r.direction.z;
     glm::vec3 point_z_max = r.origin + t * r.direction;
     vec = point_z_max - r.origin;
     distances[5] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
+    int side = -1;
     for (int i = 0; i<=5; i++){
         if(distances[i]<shortest_dis){
             if(distances[i]!=0) {
                 shortest_dis = distances[i];
+                side = i;
             }
         }
     }
 
+    // Creates 
+    vec3 sideNorm{ 0.f, 0.f, 0.f };
+    switch (side)
+    {
+    default: break;
+    case -1: break;
+    case 0: // left
+        sideNorm = { 1.f, 0.f, 0.f };
+    case 1: // right
+        sideNorm = { -1.f, 0.f, 0.f };
+    case 2: // front 
+        sideNorm = { 0.f, 0.f, 1.f };
+    case 3: // back
+        sideNorm = { 1.f, 0.f, 0.f };
+    case 4: // bottom
+        sideNorm = { 0.f, -1.f, 0.f };
+    case 5: // top
+        sideNorm = { 0.f, 1.f, 0.f };
+    
+    }
+
     t = shortest_dis;
-    glm::vec3 point = r.origin + t * r.direction;
+    vec3 point = r.origin + t * r.direction;
+    vec3 normalTrans{r.origin + t * rayTrans.direction};
 
     if (point.y >= min_.y && point.y <= max_.y) {
         if (point.z >= min_.z && point.z <= max_.z) {
+
             return HitPoint{true, t, name_, mat_, point, glm::normalize(r.direction)};
         } else {
-            return HitPoint{false, t, name_, mat_, point, glm::normalize(r.direction)};
+            return HitPoint{};
         }
     } else {
-        return HitPoint{false, t, name_, mat_, point, glm::normalize(r.direction)};
+        return HitPoint{};
     }
 
+}
+
+Ray transformRay(glm::mat4 const& mat, Ray const& ray)
+{
+    glm::vec4 origin{ ray.origin, 1.f };
+    glm::vec4 direction{ ray.direction, 0.f };
+
+    vec3 transOrigin{ origin * mat };
+    vec3 transDirection{ direction * mat };
+
+    return Ray{ transOrigin, transDirection };
 }
 
 std::ostream& Box::print(std::ostream& os) const

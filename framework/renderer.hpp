@@ -45,7 +45,6 @@ Color raytrace(Ray const& ray, Scene const& sdfScene);
 
 
 // Transformations 
-Ray transformRay(glm::mat4 const& mat, Ray const& ray);
 mat4 translate_vec(vec3 const& translation);
 mat4 scale_vec(vec3 const& scale);
 mat4 rotate_vec(float angle, vec3 const& direction);

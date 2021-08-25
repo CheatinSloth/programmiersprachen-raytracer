@@ -85,7 +85,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
 
     for (const auto& [lightName, light] : sdfScene.lightSources) {
         // Direction to light
-        shadowRay.direction = light.position - shadowRay.origin;
+        shadowRay.direction = light.position - shadePoint.touchPoint;
         for (const auto& [name, shape] : sdfScene.sceneElements) {
 
             // Checking if any light is obscured by other shape
@@ -136,17 +136,6 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
     }
     else
     return finalShade;
-}
-
-Ray transformRay(glm::mat4 const& mat, Ray const& ray)
-{
-    glm::vec4 origin{ ray.origin, 1.f };
-    glm::vec4 direction{ ray.direction, 0.f };
-
-    vec3 transOrigin{ origin * mat };
-    vec3 transDirection{ direction * mat };
-
-    return Ray{transOrigin, transDirection};
 }
 
 Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {

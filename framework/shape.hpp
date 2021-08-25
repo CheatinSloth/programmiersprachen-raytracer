@@ -2,7 +2,7 @@
 #define _USE_MATH_DEFINES
 #include <string>
 #include <cmath>
-#include <glm/vec3.hpp>
+#include <glm/glm.hpp>
 #include <glm/gtx/intersect.hpp>
 #include <iostream>
 #include "color.hpp"
@@ -23,7 +23,7 @@ public:
     virtual float const area() = 0;
     virtual float const volume() = 0;
     virtual std::ostream& print(std::ostream& os) const;
-    virtual HitPoint intersect(Ray const& ray, float& t) = 0;
+    virtual HitPoint const intersect(Ray const& ray, float& t) = 0;
 	
 protected: 
     string name_;
@@ -43,7 +43,7 @@ public:
     float const area() override;
     float const volume() override;
     std::ostream& print(std::ostream& os) const override;
-    HitPoint intersect(Ray const& r, float& t) override;
+    HitPoint const intersect(Ray const& r, float& t) override;
 
 protected: 
     vec3 center_;
@@ -60,11 +60,12 @@ public:
     float const area() override;
     float const volume() override;
     std::ostream& print(std::ostream& os) const override;
-    HitPoint intersect(Ray const& ray, float& t) override;
+    HitPoint const intersect(Ray const& ray, float& t) override;
 
 protected:
     vec3 min_;
     vec3 max_;
 };
 
+Ray transformRay(glm::mat4 const& mat, Ray const& ray);
 std::ostream& operator<<(std::ostream& os, Shape const& s);
