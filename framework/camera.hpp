@@ -1,7 +1,7 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
-#include <glm/vec3.hpp>
+#include <glm/glm.hpp>
 #include <string>
 #include <cmath>
 
@@ -16,5 +16,5 @@ struct Camera {
 	int resolutionH { 600 };
 
 	float dist() const;
-	
+	glm::mat4 transform() const;
 };

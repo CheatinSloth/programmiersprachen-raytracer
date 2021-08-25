@@ -9,6 +9,7 @@
 
 #ifndef BUW_RENDERER_HPP
 #define BUW_RENDERER_HPP
+#define _USE_MATH_DEFINES
 
 #include "color.hpp"
 #include "pixel.hpp"
