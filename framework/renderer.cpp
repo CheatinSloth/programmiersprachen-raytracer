@@ -148,7 +148,21 @@ Ray transformRay(glm::mat4 const& mat, Ray const& ray)
     return Ray{transOrigin, transDirection};
 }
 
-mat4 translate(vec3 translation)
+Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {
+    // Create pixel vector
+    vec3 dir{
+        ((1.f / width_) * p.x),
+        ((1.f / height_) * p.y),
+        -distance
+    };
+
+    // Create Camera movement
+    mat4 camTrans{ camera.transform() };
+
+    return Ray{ transformRay(camTrans, {{0.f, 0.f, 0.f}, {dir}}) };
+}
+
+mat4 translate_vec(vec3 const& translation)
 {
     glm::vec4 translation4{ translation, 1.f };
     mat4 result;
@@ -161,7 +175,7 @@ mat4 translate(vec3 translation)
     return result;
 }
 
-mat4 scale(vec3 scale)
+mat4 scale_vec(vec3 const& scale)
 {
     mat4 result;
     result[0] = { scale.x, 0.f, 0.f, 0.f };
@@ -172,22 +186,27 @@ mat4 scale(vec3 scale)
     return result;
 }
 
-mat4 rotate(float angle, vec3 axis)
+mat4 rotate_vec(float angle, vec3 const& axis)
 {
     mat4 result;
 
+    // Checking along which axis to rotate
+
+    // x-axis
     if (axis.x == 1.f && axis.y == 0 && axis.z == 0) {
         result[0] = { 1.f, 0.f, 0.f, 0.f };
         result[1] = { 0.f, cos(angle / 2.f * M_PI / 180.f), sin(angle / 2.f * M_PI / 180.f), 0.f };
         result[2] = { 0.f, -sin(angle / 2.f * M_PI / 180.f), cos(angle / 2.f * M_PI / 180.f), 0.f };
         result[3] = { 0.f, 0.f, 0.f, 1.f };
     }
+    // y-Axis
     if (axis.x == 0 && axis.y == 1.f && axis.z == 0) {
         result[0] = { 0.f, cos(angle / 2.f * M_PI / 180.f), -sin(angle / 2.f * M_PI / 180.f), 0.f };
         result[1] = { 0.f, 1.f, 0.f, 0.f };
         result[2] = { 0.f, sin(angle / 2.f * M_PI / 180.f), cos(angle / 2.f * M_PI / 180.f), 0.f };
         result[3] = { 0.f, 0.f, 0.f, 1.f };
     }
+    // z-Axis
     if (axis.x == 0 && axis.y == 0 && axis.z == 1.f) {
         result[0] = { 0.f, cos(angle / 2.f * M_PI / 180.f), sin(angle / 2.f * M_PI / 180.f), 0.f };
         result[1] = { 0.f, -sin(angle / 2.f * M_PI / 180.f), cos(angle / 2.f * M_PI / 180.f), 0.f };
@@ -195,17 +214,6 @@ mat4 rotate(float angle, vec3 axis)
         result[3] = { 0.f, 0.f, 0.f, 1.f };
     }
     return result;
-}
-
-Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {
-    vec3 dir{
-        ((1.f / width_) * p.x),
-        ((1.f / height_) * p.y),
-        -distance
-    };
-    mat4 camTrans{ camera.transform() };
-
-    return Ray{ transformRay(camTrans, {{0.f, 0.f, 0.f}, {dir}}) };
 }
 
 // Data pipeline (in my head): sdf file->parser->raytrace->shade->renderer

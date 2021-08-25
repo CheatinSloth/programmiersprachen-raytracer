@@ -129,13 +129,6 @@ void parse(string const& fileName, Scene sdfScene) {
 
 
 					sdfScene.lightSources.emplace(instructions[2], sdfLight);
-				}
-
-				// TODO: Implement transformations + parsing
-				else if (instructions[1] == "transform") {
-					if (instructions[2] == "scale") {}
-					if (instructions[2] == "translate") {}
-					if (instructions[2] == "rotate") {}
 				}			
 
 				// No matching term will end loop
@@ -152,6 +145,27 @@ void parse(string const& fileName, Scene sdfScene) {
 					break;
 				}
 				sdfScene.baseLighting = { stof(instructions[1]), stof(instructions[2]), stof(instructions[3]) };
+			}
+
+			// Transforms
+			else if (instructions[0] == "transform") {
+			cout << "Attempting to transform " << instructions[1] << endl;
+			if (instructions[1] == "scale") {
+				if (instructions.size() != 5) {
+					cout << "Incorrect instruction syntax. Transformation scale requires 5 tokens." << endl;
+				}
+
+			}
+			if (instructions[1] == "translate") {
+				if (instructions.size() != 5) {
+					cout << "Incorrect instruction syntax. Transformation translate requires 5 tokens." << endl;
+				}
+			}
+			if (instructions[1] == "rotate") {
+				if (instructions.size() != 6) {
+					cout << "Incorrect instruction syntax. Transformation translate requires 6 tokens." << endl;
+				}
+			}
 			}
 
 			else if (instructions[0] == "render") {
