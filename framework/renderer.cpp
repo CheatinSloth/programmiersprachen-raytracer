@@ -27,8 +27,10 @@ void Renderer::render(Scene const& scene)
       Pixel p(x,y);
       if ( ((x/checker_pattern_size)%2) != ((y/checker_pattern_size)%2)) {
         p.color = Color{0.0f, 1.0f, float(x)/height_};
+        // p.color = Color{raytrace(ray??, scene)
       } else {
         p.color = Color{1.0f, 0.0f, float(y)/width_};
+        // p.color = Color{raytrace(ray??, scene)
       }
 
       write(p);
@@ -56,13 +58,17 @@ void Renderer::write(Pixel const& p)
 ////////////////////////
 /*
  TODO: 
- - Eine Test SDF zu rendern w�r vllt sinnvoll | added test sdf to repository, probelms with parsing?
+ - Eine Test SDF zu rendern w�r vllt sinnvoll | added test sdf to repository, probelms with parsing or file format
  - Ich hab das Gef�hl dass shade() und raytrace() grunds�tzlich stimmen, aber mag sein dass bei
  den Normalisierungen bzw Richtungen der Vektoren Schusselfehler drin sein k�nnten | ich hab nichts gefunden was falsch aussieht, weiß aber nicht genau wo wir die rekursion reinpacken
 
- - Distance vergleich zwischen Lichtquelle und Objekt fehlt, k�nnten noch einbauen, dass Lichtquelle n�her als Objekt trotzdem beleuchtet | idk what you mean
+ - Distance vergleich zwischen Lichtquelle und Objekt fehlt, k�nnten noch einbauen, dass Lichtquelle n�her als Objekt trotzdem beleuchtet | idk what you mean, bzw wo das hin muss
+
+
 
  - Erweiterungen f�r Reflektion/Refraktion k�nnten wir vielleicht einbauen, falls Testrender erfolgreich ist
+  erweitertes BeleuchtungsmodelL?
+
  - Transform Methoden w�ren auch sinnvoll
 
 */
@@ -92,7 +98,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
             else {
 
                 // Lambert Rule (is this the right place for this?)
-                //seems right...
+                //hier oder in raytrace?
                 vec3 shadowRayNormal = glm::normalize(shadowRay.direction);
                 vec3 norm = glm::normalize(shadePoint.normal);
 
@@ -130,3 +136,6 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
     }
     return finalShade;
 }
+
+// Data pipeline (in my head): sdf file->parser->raytrace->shade->renderer
+// renderer nimmt nur scene entgegen
