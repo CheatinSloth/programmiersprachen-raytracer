@@ -137,5 +137,15 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
     return finalShade;
 }
 
+Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {
+    vec3 dir{
+        ((1.f / width_) * p.x),
+        ((1.f / height_) * p.y),
+        distance
+    };
+
+    return Ray{};
+}
+
 // Data pipeline (in my head): sdf file->parser->raytrace->shade->renderer
 // renderer nimmt nur scene entgegen
