@@ -187,7 +187,7 @@ HitPoint const Box::intersect(Ray const& r, float& t) {
         }
     }
 
-    // Creates 
+    // Creates normal vector for orthogonal boxes
     vec3 sideNorm{ 0.f, 0.f, 0.f };
     switch (side)
     {
@@ -205,7 +205,6 @@ HitPoint const Box::intersect(Ray const& r, float& t) {
         sideNorm = { 0.f, -1.f, 0.f };
     case 5: // top
         sideNorm = { 0.f, 1.f, 0.f };
-    
     }
 
     t = shortest_dis;
@@ -215,7 +214,7 @@ HitPoint const Box::intersect(Ray const& r, float& t) {
     if (point.y >= min_.y && point.y <= max_.y) {
         if (point.z >= min_.z && point.z <= max_.z) {
 
-            return HitPoint{true, t, name_, mat_, point, glm::normalize(r.direction)};
+            return HitPoint{true, t, name_, mat_, point, glm::normalize(r.direction), sideNorm};
         } else {
             return HitPoint{};
         }
