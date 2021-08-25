@@ -164,16 +164,18 @@ void parse(string const& fileName, Scene sdfScene) {
 //now single threaded again
 int main(int argc, char* argv[])
 {
+
   unsigned const image_width = 800;
   unsigned const image_height = 600;
   string const filename = "./checkerboard.ppm";
+
 
   Renderer renderer{image_width, image_height, filename};
 
   Scene scene;
   parse("test.sdf", scene);
 
-  renderer.render();
+  renderer.render(scene);
 
   Window window{{image_width, image_height}};
 

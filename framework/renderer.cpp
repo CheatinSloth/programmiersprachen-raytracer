@@ -56,12 +56,14 @@ void Renderer::write(Pixel const& p)
 ////////////////////////
 /*
  TODO: 
- - Eine Test SDF zu rendern wär vllt sinnvoll
- - Ich hab das Gefühl dass shade() und raytrace() grundsätzlich stimmen, aber mag sein dass bei
- den Normalisierungen bzw Richtungen der Vektoren Schusselfehler drin sein könnten
- - Distance vergleich zwischen Lichtquelle und Objekt fehlt, könnten noch einbauen, dass Lichtquelle näher als Objekt trotzdem beleuchtet 
- - Erweiterungen für Reflektion/Refraktion könnten wir vielleicht einbauen, falls Testrender erfolgreich ist
- - Transform Methoden wären auch sinnvoll
+ - Eine Test SDF zu rendern wï¿½r vllt sinnvoll | added test sdf to repository, probelms with parsing?
+ - Ich hab das Gefï¿½hl dass shade() und raytrace() grundsï¿½tzlich stimmen, aber mag sein dass bei
+ den Normalisierungen bzw Richtungen der Vektoren Schusselfehler drin sein kï¿½nnten | ich hab nichts gefunden was falsch aussieht, weiÃŸ aber nicht genau wo wir die rekursion reinpacken
+
+ - Distance vergleich zwischen Lichtquelle und Objekt fehlt, kï¿½nnten noch einbauen, dass Lichtquelle nï¿½her als Objekt trotzdem beleuchtet | idk what you mean
+
+ - Erweiterungen fï¿½r Reflektion/Refraktion kï¿½nnten wir vielleicht einbauen, falls Testrender erfolgreich ist
+ - Transform Methoden wï¿½ren auch sinnvoll
 
 */
 
@@ -90,6 +92,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
             else {
 
                 // Lambert Rule (is this the right place for this?)
+                //seems right...
                 vec3 shadowRayNormal = glm::normalize(shadowRay.direction);
                 vec3 norm = glm::normalize(shadePoint.normal);
 
