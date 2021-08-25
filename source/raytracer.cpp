@@ -49,11 +49,11 @@ void parse(string const& fileName, Scene sdfScene) {
 						break;
 					}
 
-						sdfScene.sceneElements.emplace(instructions[3],												// Places sphere at name
-							new Sphere({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },     // Center
-								stof(instructions[7]),																// Radius
-								sdfScene.sceneMaterial.at(instructions[8]),											// Material
-								instructions[3]));																	// Name
+					sdfScene.sceneElements.emplace(instructions[3],												// Places sphere at name
+						new Sphere({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },     // Center
+							stof(instructions[7]),																// Radius
+							sdfScene.sceneMaterial.at(instructions[8]),											// Material
+							instructions[3]));																	// Name
 				}
 
 				// Block for creating Shape::Box and adding it to sceneShapes map
@@ -65,9 +65,9 @@ void parse(string const& fileName, Scene sdfScene) {
 
 					sdfScene.sceneElements.emplace(instructions[3],													// Places Box at name
 						new Box({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },			// min
-								{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },			// max
-								sdfScene.sceneMaterial.at(instructions[10]),										// Material
-								instructions[3]));																	// name
+							{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },			// max
+							sdfScene.sceneMaterial.at(instructions[10]),										// Material
+							instructions[3]));																	// name
 				}
 
 
@@ -117,9 +117,9 @@ void parse(string const& fileName, Scene sdfScene) {
 						{ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) },					// position
 						{ stof(instructions[6]) ,stof(instructions[7]) ,stof(instructions[8]) },					// hue
 						stoi(instructions[9]) };																	// luminance
-					
 
-					sdfScene.lightSources.emplace(instructions[2],  sdfLight);
+
+					sdfScene.lightSources.emplace(instructions[2], sdfLight);
 				}
 
 				// TODO: Implement transformations + parsing
@@ -141,6 +141,8 @@ void parse(string const& fileName, Scene sdfScene) {
 				}
 			}
 
+
+
 			// Set ambient lighting
 			else if (instructions[0] == "ambient") {
 				if (instructions.size() != 4) {
@@ -150,13 +152,16 @@ void parse(string const& fileName, Scene sdfScene) {
 				sdfScene.baseLighting = { stof(instructions[1]), stof(instructions[2]), stof(instructions[3]) };
 			}
 
+			else if (instructions[0] == "render") {
+			}
+
 			// Missing "define" terminates program
 			else {
 				cout << "Incorrect instruction in File";
 				break;
 			}
-
 		}
+			
 	}
 	file.close();
 }
