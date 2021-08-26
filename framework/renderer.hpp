@@ -19,6 +19,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <math.h>
+#include "camera.hpp"
 
 class Renderer
 {

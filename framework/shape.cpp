@@ -86,6 +86,7 @@ HitPoint const Sphere::intersect(Ray const& r)
         vec3 normalTrans(transp * glm::vec4{ normalVec.x, normalVec.y, normalVec.z, 0.f });
         normalVec = glm::normalize(normalTrans);
 
+
         return HitPoint{ true, t, name_, mat_, hitpoint, normalizedDirection, normalVec };
     }
     else
@@ -152,28 +153,28 @@ HitPoint const Box::intersect(Ray const& r) {
     vec = point_x_max - r.origin;
     distances[1] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
-    // front
+    // bottom
     float y_min = min_.y;
     t = (y_min - r.origin.y) / r.direction.y;
     glm::vec3 point_y_min = r.origin + t * r.direction;
     vec = point_y_min - r.origin;
     distances[2] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
-    // back
+    // top
     float y_max = max_.y;
     t = (y_max - r.origin.y) / r.direction.y;
     glm::vec3 point_y_max = r.origin + t * r.direction;
     vec = point_y_max - r.origin;
     distances[3] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
-    // bottom
+    // front
     float z_min = min_.z;
     t = (z_min - r.origin.z) / r.direction.z;
     glm::vec3 point_z_min = r.origin + t * r.direction;
     vec = point_z_min - r.origin;
     distances[4] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
-    // top 
+    // back
     float z_max = max_.z;
     t = (z_max - r.origin.z) / r.direction.z;
     glm::vec3 point_z_max = r.origin + t * r.direction;
@@ -200,21 +201,21 @@ HitPoint const Box::intersect(Ray const& r) {
     case -1: // no hit
         break;
     case 0: // left
-        sideNorm = { -1.f, 0.f, 0.f };
-    case 1: // right
         sideNorm = { 1.f, 0.f, 0.f };
-    case 2: // front 
-        sideNorm = { 0.f, 0.f, 1.f };
-    case 3: // back
+    case 1: // right
+        sideNorm = { -1.f, 0.f, 0.f };
+    case 2: // bottom
+        sideNorm = { 0.f, 1.0f, 0.0f };
+    case 3: // top
+        sideNorm = { 0.0f, -1.0f, 0.f };
+    case 4: // front
         sideNorm = { 0.f, 0.f, -1.f };
-    case 4: // bottom
-        sideNorm = { 0.f, -1.f, 0.f };
-    case 5: // top
-        sideNorm = { 0.f, 1.f, 0.f };
+    case 5: // back
+        sideNorm = { 0.f, 0.f, 1.f };
     }
 
     t = shortest_dis;
-    vec3 point = (r.origin + t * r.direction) - 0.0001f;
+    vec3 point = (r.origin + t * r.direction ) - 0.0001f;
     vec3 normalTrans{r.origin + t * rayTrans.direction};
 
     if (point.y >= min_.y && point.y <= max_.y) {

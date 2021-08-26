@@ -71,13 +71,15 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
         shadePoint.mat->ka.g * sdfScene.baseLighting.g,
         shadePoint.mat->ka.b * sdfScene.baseLighting.b
     };
-    
+    shadePoint.touchPoint += 0.0001f;
+
     Ray shadowRay{ shadePoint.touchPoint, {0.0f, 0.0f, 0.0f} };
 
     for (const auto& [lightName, light] : sdfScene.lightSources) {
         // Direction to light
         shadowRay.direction = glm::normalize(light.position - shadePoint.touchPoint);
         for (const auto& [name, shape] : sdfScene.sceneElements) {
+
 
             // Checking if any light is obscured by other shape
             HitPoint intersectPoint = shape->intersect(shadowRay);
@@ -86,24 +88,24 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
                 return finalShade;
             }
 
-            else {
+            else
+            {
 
                 vec3 norm = glm::normalize(shadePoint.normal);
                 float angle = glm::dot(shadowRay.direction, norm);
                 angle = std::max(angle, 0.f);
 
-                vec3 reflectVec = (2 * angle * shadePoint.normal) - shadowRay.direction;
+                vec3 reflectVec = 2 *angle * shadePoint.normal - shadowRay.direction;
                 float angle1 = glm::dot(reflectVec, -shadePoint.touchPoint);
 
-                // Summation of all visible light intensities (I = lightintensity * kd of material * cross(normal * raytolight))
-
-             // Color at point | light intensity  | kd of material   | cross(n*l) |  intensity of ambience |  ka of material      |      (r*v)^m - needs fix
-                finalShade.r = light.luminance * (shadePoint.mat->kd.r * angle) + (sdfScene.baseLighting.r * shadePoint.mat->ka.r); // pow(angle1, shadePoint.mat->reflectionExponent);
-                finalShade.g = light.luminance * (shadePoint.mat->kd.g * angle) + (sdfScene.baseLighting.g * shadePoint.mat->ka.g); // pow(angle1,shadePoint.mat->reflectionExponent);
-                finalShade.b = light.luminance * (shadePoint.mat->kd.b * angle) + (sdfScene.baseLighting.b * shadePoint.mat->ka.b); // pow(angle1, shadePoint.mat->reflectionExponent);
+                finalShade.r = (sdfScene.baseLighting.r * shadePoint.mat->ka.r) + light.luminance * ((shadePoint.mat->kd.r * angle) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent));
+                finalShade.g = (sdfScene.baseLighting.g * shadePoint.mat->ka.g) + light.luminance * ((shadePoint.mat->kd.g * angle) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent));
+                finalShade.b = (sdfScene.baseLighting.b * shadePoint.mat->ka.b) + light.luminance * ((shadePoint.mat->kd.b * angle) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent));
             }
+
         }
     }
+
 
     // HDR Color correcting
     finalShade.r = finalShade.r / (finalShade.r + 1);
@@ -112,6 +114,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
 
     return finalShade;
 }
+
 
 Color raytrace(Ray const& ray, Scene const& sdfScene) {
     HitPoint temp;
