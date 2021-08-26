@@ -68,23 +68,25 @@ std::ostream& Sphere::print(std::ostream& os) const
     return os;
 }
 
-HitPoint const Sphere::intersect(Ray const& r, float& t)
+HitPoint const Sphere::intersect(Ray const& r)
 {
+    float t;
+    vec3 hitpoint, hitnormal;
     Ray rayTrans{transformRay(world_transformation_inv_, r)};
     vec3 normalizedDirection = glm::normalize(rayTrans.direction);
 
-    if (glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_ * radius_, t)) {
-        vec3 touch = {rayTrans.origin + t * normalizedDirection};
+    if (glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_, hitpoint, hitnormal)) {
+   
+        vec3 distanceVec = hitpoint - r.origin;
+        t = sqrt(pow(distanceVec.x, 2) + pow(distanceVec.y, 2) + pow(distanceVec.z, 2));
 
-        t /= sqrt(glm::dot(rayTrans.direction, rayTrans.direction));
-
-        vec3 normalVec{touch - center_};
+        vec3 normalVec{hitpoint - center_};
 
         mat4 transp = glm::transpose(world_transformation_inv_);
         vec3 normalTrans(transp * glm::vec4{ normalVec.x, normalVec.y, normalVec.z, 0.f });
         normalVec = glm::normalize(normalTrans);
 
-        return HitPoint{ true, t, name_, mat_, touch, normalizedDirection, normalVec };
+        return HitPoint{ true, t, name_, mat_, hitpoint, normalizedDirection, normalVec };
     }
     else
         return HitPoint{};
@@ -130,10 +132,11 @@ float const Box::volume()
     return h*w*l;
 }
 
-HitPoint const Box::intersect(Ray const& r, float& t) {
+HitPoint const Box::intersect(Ray const& r) {
     Ray rayTrans{ transformRay(world_transformation_inv_, r) };
     float shortest_dis = INFINITY;
     float distances[6];
+    float t;
 
     // left
     float x_min = min_.x;

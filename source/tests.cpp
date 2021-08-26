@@ -35,12 +35,11 @@ TEST_CASE("intersect_ray_sphere", "[intersect]")
 TEST_CASE("intersect_ray_box", "[intersect]")
 {
     //ray construction
-    float t = 0.0f;
   //  glm::vec3 rai = {0.0f, 0.0f, 0.0f};
   //  glm::vec3 rai_dir = {0.0f, 1.0f, 0.0f};
     Ray brrr = {{0.0f,0.0f,0.0f}, {0.0f,1.0f,0.0f}};
     Box Peter{{-1.0f,1.0f,-1.0f},{1.0f, 2.0f, 1.0f}};
-    HitPoint boi = Peter.intersect(brrr, t);
+    HitPoint boi = Peter.intersect(brrr);
     REQUIRE(boi.hit == true);
     REQUIRE(boi.dist == Approx(1.0f));
     REQUIRE(boi.touchPoint.x == Approx(0.0f));
@@ -50,7 +49,7 @@ TEST_CASE("intersect_ray_box", "[intersect]")
 
     Ray light = {{0.0f,0.0f,0.0f},{1.0f,0.0f,0.0f}};
     Box Bob{{5.0f,-1.0f,-1.0f},{7.0f, 1.0f, 1.0f}};
-    HitPoint p = Bob.intersect(light, t);
+    HitPoint p = Bob.intersect(light);
     REQUIRE(p.hit == true);
     REQUIRE(p.dist == Approx(5.0f));
     REQUIRE(p.touchPoint.x == Approx(5.0f));
@@ -59,7 +58,7 @@ TEST_CASE("intersect_ray_box", "[intersect]")
 
     Ray wilson = {{0.0f,0.0f,0.0f},{0.0f,0.0f,1.0f}};
     Box Karl{{-1.0f,-1.0f,3.0f},{1.0f, 2.0f, 5.0f}};
-    HitPoint q = Karl.intersect(wilson, t);
+    HitPoint q = Karl.intersect(wilson);
     REQUIRE(q.hit == true);
     REQUIRE(q.dist == Approx(3.0f));
     REQUIRE(q.touchPoint.x == Approx(0.0f));

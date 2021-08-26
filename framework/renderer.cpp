@@ -25,13 +25,13 @@ void Renderer::render(Scene const& scene, Camera const& camera)
   for (unsigned y = 0; y < height_; ++y) {
     for (unsigned x = 0; x < width_; ++x) {
       Pixel p(x,y);
-      if ( ((x/checker_pattern_size)%2) != ((y/checker_pattern_size)%2)) {
-        p.color = Color{0.0f, 1.0f, float(x)/height_};
+      /*if ( ((x/checker_pattern_size)%2) != ((y/checker_pattern_size)%2)) {
+        p.color = color{0.0f, 1.0f, float(x)/height_};
       }
       else {
-          p.color = Color{ 1.0f, 0.0f, float(y) / width_ };
+          p.color = color{ 1.0f, 0.0f, float(y) / width_ };
 
-      }
+      }*/
       p.color = raytrace(make_cam_ray(p, camera, camera.dist()), scene);
       write(p);
     }
@@ -69,7 +69,7 @@ void Renderer::write(Pixel const& p)
 
 */
 
-/*Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
+Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
     Color finalShade{
         shadePoint.mat->ka.r * sdfScene.baseLighting.r,
         shadePoint.mat->ka.g * sdfScene.baseLighting.g,
@@ -85,10 +85,10 @@ void Renderer::write(Pixel const& p)
         for (const auto& [name, shape] : sdfScene.sceneElements) {
 
             // Checking if any light is obscured by other shape
-            HitPoint intersectPoint = shape->intersect(shadowRay, dist);
+            HitPoint intersectPoint = shape->intersect(shadowRay);
 
             // Ignoring luminance of obscured light
-            if (intersectPoint.hit == true) {
+            if (intersectPoint.hit) {
                 break;
             }
 
@@ -113,33 +113,33 @@ void Renderer::write(Pixel const& p)
     finalShade.b = finalShade.b / (finalShade.b + 1);
 
     return finalShade;
-}*/
+}
 
 Color raytrace(Ray const& ray, Scene const& sdfScene) {
     HitPoint temp;
-    float dist = INFINITY;
     HitPoint minHit;
     Color finalShade{ sdfScene.baseLighting };
 
     for (const auto& [name, shape] : sdfScene.sceneElements) {
-        temp = shape->intersect(ray, dist);
+        temp = shape->intersect(ray);
         if (temp.dist < minHit.dist && temp.hit) {
             minHit = temp;
         }
     }
 
     if (minHit.hit) {
-        return { 1.f, 0.f, 0.f };
-        //return finalShade = shade(minHit, sdfScene);
+        minHit.touchPoint += 0.000001f;
+        return finalShade = shade(minHit, sdfScene);
     }
     else
     return finalShade;
+   
 }
 
 Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {
     // Create pixel vector
-    float x = ((p.x / width_ - 0.5f) * 2 * std::tan(camera.angle / 180.0f * M_PI));
-    float y = ((p.y  / height_ - 0.5f) * 2 * std::tan(camera.angle / 180.0f * M_PI));
+    float x = (((float)p.x / (float)width_ - 0.5f) * 2.f * (float)std::tan(camera.angle / 180.0f * M_PI));
+    float y = (((float)p.y  / (float)height_ - 0.5f) * 2.f * (float)std::tan(camera.angle / 180.0f * M_PI));
 
     vec3 rightVec = glm::cross(camera.direction, camera.up);
     vec3 directionVec = glm::normalize(x * rightVec + y * camera.up + camera.direction);
