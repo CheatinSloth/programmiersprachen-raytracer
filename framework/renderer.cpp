@@ -86,7 +86,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
 
             // Checking if any light is obscured by other shape
             HitPoint intersectPoint = shape->intersect(shadowRay);
-
+            offset(intersectPoint);
             // Ignoring luminance of obscured light
             if (intersectPoint.hit) {
                 break;
@@ -106,8 +106,8 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
             }
         }
     }
-    // HDR Color correcting
 
+    // HDR Color correcting
     finalShade.r = finalShade.r / (finalShade.r + 1);
     finalShade.g = finalShade.g / (finalShade.g + 1);
     finalShade.b = finalShade.b / (finalShade.b + 1);
@@ -127,8 +127,9 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
         }
     }
 
+    offset(minHit);
+
     if (minHit.hit) {
-        minHit.touchPoint += 0.0001f;
         return finalShade = shade(minHit, sdfScene);
     }
     else
@@ -204,5 +205,6 @@ mat4 rotate_vec(float angle, vec3 const& axis)
     return result;
 }
 
-// Data pipeline (in my head): sdf file->parser->raytrace->shade->renderer
-// renderer nimmt nur scene entgegen
+void offset(HitPoint& hitPoint) {
+    hitPoint.touchPoint += 0.0001f;
+}
