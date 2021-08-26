@@ -128,7 +128,7 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
     }
 
     if (minHit.hit) {
-        minHit.touchPoint += 0.000001f;
+        minHit.touchPoint += 0.0001f;
         return finalShade = shade(minHit, sdfScene);
     }
     else
