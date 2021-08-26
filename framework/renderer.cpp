@@ -93,7 +93,6 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
 
             else {
 
-                // Lambert Rule (is this the right place for this?)
                 // hier oder in raytrace?
                 vec3 norm = glm::normalize(shadePoint.normal);
                 float angle = glm::dot(shadowRay.direction, norm);
