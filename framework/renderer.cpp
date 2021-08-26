@@ -57,15 +57,11 @@ void Renderer::write(Pixel const& p)
 ////////////////////////
 /*
  TODO: 
- - Eine Test SDF zu rendern w�r vllt sinnvoll | added test sdf to repository, probelms with parsing or file format
+ - Shade muss vollständig implementiert werden (Phong Modell)
+ 
+ - Box::intersect() nochmal überprüfen, vor allem normalen für seiten 
 
- - Ich hab das Gef�hl dass shade() und raytrace() grunds�tzlich stimmen, aber mag sein dass bei
- den Normalisierungen bzw Richtungen der Vektoren Schusselfehler drin sein k�nnten | ich hab nichts gefunden was falsch aussieht, weiß aber nicht genau wo wir die rekursion reinpacken
-
- - Distance vergleich zwischen Lichtquelle und Objekt fehlt, k�nnten noch einbauen, dass Lichtquelle n�her als Objekt trotzdem beleuchtet | idk what you mean, bzw wo das hin muss
-
- - Erweiterungen f�r Reflektion/Refraktion k�nnten wir vielleicht einbauen, falls Testrender erfolgreich ist
-  erweitertes BeleuchtungsmodelL?
+ - Erweiterungen fuer Reflektion/Refraktion später mit einbauen
 
 */
 
@@ -76,7 +72,6 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
         shadePoint.mat->ka.b * sdfScene.baseLighting.b
     };
     
-    float dist;
     Ray shadowRay{ shadePoint.touchPoint, {0.0f, 0.0f, 0.0f} };
 
     for (const auto& [lightName, light] : sdfScene.lightSources) {
@@ -88,12 +83,11 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
             HitPoint intersectPoint = shape->intersect(shadowRay);
             // Ignoring luminance of obscured light
             if (intersectPoint.hit) {
-                break;
+                return finalShade;
             }
 
             else {
 
-                // hier oder in raytrace?
                 vec3 norm = glm::normalize(shadePoint.normal);
                 float angle = glm::dot(shadowRay.direction, norm);
                 angle = std::max(angle, 0.f);
@@ -103,10 +97,10 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
 
                 // Summation of all visible light intensities (I = lightintensity * kd of material * cross(normal * raytolight))
 
-             // Color at point | light intensity  | kd of material   | cross(n*l) |  intensity of ambience |  ka of material      |      (r*v)^m
-                finalShade.r = light.luminance * (shadePoint.mat->kd.r * angle) + (sdfScene.baseLighting.r * shadePoint.mat->ka.r) + pow(angle1, shadePoint.mat->ks.r);
-                finalShade.g = light.luminance * (shadePoint.mat->kd.g * angle) + (sdfScene.baseLighting.g * shadePoint.mat->ka.g) + pow(angle1, shadePoint.mat->ks.g);
-                finalShade.b = light.luminance * (shadePoint.mat->kd.b * angle) + (sdfScene.baseLighting.b * shadePoint.mat->ka.b) + pow(angle1, shadePoint.mat->ks.b);
+             // Color at point | light intensity  | kd of material   | cross(n*l) |  intensity of ambience |  ka of material      |      (r*v)^m - needs fix
+                finalShade.r = light.luminance * (shadePoint.mat->kd.r * angle) + (sdfScene.baseLighting.r * shadePoint.mat->ka.r); // pow(angle1, shadePoint.mat->reflectionExponent);
+                finalShade.g = light.luminance * (shadePoint.mat->kd.g * angle) + (sdfScene.baseLighting.g * shadePoint.mat->ka.g); // pow(angle1,shadePoint.mat->reflectionExponent);
+                finalShade.b = light.luminance * (shadePoint.mat->kd.b * angle) + (sdfScene.baseLighting.b * shadePoint.mat->ka.b); // pow(angle1, shadePoint.mat->reflectionExponent);
             }
         }
     }
