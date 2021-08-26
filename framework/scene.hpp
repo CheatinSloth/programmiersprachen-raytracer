@@ -10,7 +10,6 @@ using std::vector;
 using std::map;
 
 struct Scene {
-	
 	map<string, std::shared_ptr<Shape>> sceneElements;
 	map<string, light> lightSources;
 	Color baseLighting{0.1f, 0.1f, 0.1f};

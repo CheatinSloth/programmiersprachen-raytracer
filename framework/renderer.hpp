@@ -18,6 +18,7 @@
 #include "shape.hpp"
 #include <string>
 #include <glm/glm.hpp>
+#include <math.h>
 
 class Renderer
 {

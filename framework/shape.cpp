@@ -178,6 +178,7 @@ HitPoint const Box::intersect(Ray const& r, float& t) {
     distances[5] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
     int side = -1;
+
     for (int i = 0; i<=5; i++){
         if(distances[i]<shortest_dis){
             if(distances[i]!=0) {
@@ -191,8 +192,10 @@ HitPoint const Box::intersect(Ray const& r, float& t) {
     vec3 sideNorm{ 0.f, 0.f, 0.f };
     switch (side)
     {
-    default: break;
-    case -1: break;
+    default: // should never apply
+        break;
+    case -1: // no hit
+        break;
     case 0: // left
         sideNorm = { 1.f, 0.f, 0.f };
     case 1: // right

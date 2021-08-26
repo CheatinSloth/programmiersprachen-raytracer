@@ -13,7 +13,7 @@ using namespace::std;
 
 // Testing for access token 
 //Parser 
-void parse(string const& fileName, Scene sdfScene) {
+void parse(string const& fileName, Scene& sdfScene, Renderer& renderer) {
 	cout << "Parsing started" << endl;
 	vector<string> instructions;
 
@@ -97,15 +97,14 @@ void parse(string const& fileName, Scene sdfScene) {
 							{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },					// direction
 							{ stof(instructions[10]), stof(instructions[11]), stof(instructions[12]) },					// up
 							800,																						// resolutionV
-							600 };																						// resolutionH
+							600 
+						};																						// resolutionH
 
 						sdfScene.sceneCameras.emplace(instructions[2], sdfCamera);
 					}
 
 					if (instructions.size() == 4) {
-						Camera sdfCamera;
-						sdfCamera.angle = stof(instructions[3]);
-						sdfCamera.name = instructions[2];
+						Camera sdfCamera{ instructions[2], stof(instructions[3]) };
 						sdfScene.sceneCameras.emplace(instructions[2], sdfCamera);
 					}
 					else {
@@ -125,9 +124,8 @@ void parse(string const& fileName, Scene sdfScene) {
 						instructions[2],																			// name								
 						{ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) },					// position
 						{ stof(instructions[6]) ,stof(instructions[7]) ,stof(instructions[8]) },					// hue
-						stoi(instructions[9]) };																	// luminance
-
-
+						stoi(instructions[9])																		// luminance
+					};																	
 					sdfScene.lightSources.emplace(instructions[2], sdfLight);
 				}			
 
@@ -167,10 +165,10 @@ void parse(string const& fileName, Scene sdfScene) {
 				}
 			}
 			}
-
+		
 			else if (instructions[0] == "render") {
 			cout << "Starting render" << endl;
-			Renderer renderer{ stoul(instructions[3]), stoul(instructions[4]), instructions[2] };
+			//renderer{ stoul(instructions[3]), stoul(instructions[4]), instructions[2] };
 			renderer.render(sdfScene, sdfScene.sceneCameras.at(instructions[1]));
 			}
 
@@ -204,7 +202,13 @@ int main(int argc, char* argv[])
 
   Scene scene;
   scene.baseLighting = { 0.f, 1.f, 0.f };
-  parse("test.sdf", scene);
+
+  parse("test.sdf", scene, renderer);
+
+
+  cout << scene.sceneMaterial.size() << " Materials in scene" << endl;
+  cout << scene.sceneElements.size() << " Elements in scene" << endl;
+  cout << scene.lightSources.size() << " Lights in scene" << endl;
 
   Window window{{image_width, image_height}};
 

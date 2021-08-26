@@ -27,12 +27,11 @@ void Renderer::render(Scene const& scene, Camera const& camera)
       Pixel p(x,y);
       if ( ((x/checker_pattern_size)%2) != ((y/checker_pattern_size)%2)) {
         p.color = Color{0.0f, 1.0f, float(x)/height_};
-        // p.color = Color{raytrace(ray??, scene)
-      } else {
-        p.color = Color{1.0f, 0.0f, float(y)/width_};
-        // p.color = Color{raytrace(ray??, scene)
       }
+      else {
+          p.color = Color{ 1.0f, 0.0f, float(y) / width_ };
 
+      }
       p.color = raytrace(make_cam_ray(p, camera, camera.dist()), scene);
       write(p);
     }
@@ -59,21 +58,18 @@ void Renderer::write(Pixel const& p)
 /*
  TODO: 
  - Eine Test SDF zu rendern w�r vllt sinnvoll | added test sdf to repository, probelms with parsing or file format
+
  - Ich hab das Gef�hl dass shade() und raytrace() grunds�tzlich stimmen, aber mag sein dass bei
  den Normalisierungen bzw Richtungen der Vektoren Schusselfehler drin sein k�nnten | ich hab nichts gefunden was falsch aussieht, weiß aber nicht genau wo wir die rekursion reinpacken
 
  - Distance vergleich zwischen Lichtquelle und Objekt fehlt, k�nnten noch einbauen, dass Lichtquelle n�her als Objekt trotzdem beleuchtet | idk what you mean, bzw wo das hin muss
 
-
-
  - Erweiterungen f�r Reflektion/Refraktion k�nnten wir vielleicht einbauen, falls Testrender erfolgreich ist
   erweitertes BeleuchtungsmodelL?
 
- - Transform Methoden w�ren auch sinnvoll
-
 */
 
-Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
+/*Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
     Color finalShade{
         shadePoint.mat->ka.r * sdfScene.baseLighting.r,
         shadePoint.mat->ka.g * sdfScene.baseLighting.g,
@@ -95,10 +91,11 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
             if (intersectPoint.hit == true) {
                 break;
             }
+
             else {
 
                 // Lambert Rule (is this the right place for this?)
-                //hier oder in raytrace?
+                // hier oder in raytrace?
                 vec3 shadowRayNormal = glm::normalize(shadowRay.direction);
                 vec3 norm = glm::normalize(shadePoint.normal);
 
@@ -116,23 +113,24 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
     finalShade.b = finalShade.b / (finalShade.b + 1);
 
     return finalShade;
-}
+}*/
 
 Color raytrace(Ray const& ray, Scene const& sdfScene) {
     HitPoint temp;
     float dist = INFINITY;
     HitPoint minHit;
-    Color finalShade{sdfScene.baseLighting};
+    Color finalShade{ sdfScene.baseLighting };
 
     for (const auto& [name, shape] : sdfScene.sceneElements) {
         temp = shape->intersect(ray, dist);
-        if (temp.dist < minHit.dist) {
+        if (temp.dist < minHit.dist && temp.hit) {
             minHit = temp;
         }
     }
 
-    if (minHit.hit == true) {
-        return finalShade = shade(minHit, sdfScene);
+    if (minHit.hit) {
+        return { 1.f, 0.f, 0.f };
+        //return finalShade = shade(minHit, sdfScene);
     }
     else
     return finalShade;
@@ -140,16 +138,16 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
 
 Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {
     // Create pixel vector
-    vec3 dir{
-        ((1.f / width_) * p.x),
-        ((1.f / height_) * p.y),
-        -distance
-    };
+    float x = ((p.x / width_ - 0.5f) * 2 * std::tan(camera.angle / 180.0f * M_PI));
+    float y = ((p.y  / height_ - 0.5f) * 2 * std::tan(camera.angle / 180.0f * M_PI));
+
+    vec3 rightVec = glm::cross(camera.direction, camera.up);
+    vec3 directionVec = glm::normalize(x * rightVec + y * camera.up + camera.direction);
 
     // Create Camera movement
     mat4 camTrans{ camera.transform() };
 
-    return Ray{ transformRay(camTrans, {{0.f, 0.f, 0.f}, {dir}}) };
+    return Ray{ transformRay(camTrans, {camera.position, {directionVec}}) };
 }
 
 mat4 translate_vec(vec3 const& translation)
