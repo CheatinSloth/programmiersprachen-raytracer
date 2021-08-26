@@ -200,13 +200,13 @@ HitPoint const Box::intersect(Ray const& r) {
     case -1: // no hit
         break;
     case 0: // left
-        sideNorm = { 1.f, 0.f, 0.f };
-    case 1: // right
         sideNorm = { -1.f, 0.f, 0.f };
+    case 1: // right
+        sideNorm = { 1.f, 0.f, 0.f };
     case 2: // front 
         sideNorm = { 0.f, 0.f, 1.f };
     case 3: // back
-        sideNorm = { 1.f, 0.f, 0.f };
+        sideNorm = { 0.f, 0.f, -1.f };
     case 4: // bottom
         sideNorm = { 0.f, -1.f, 0.f };
     case 5: // top
