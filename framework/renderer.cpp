@@ -81,12 +81,11 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
 
     for (const auto& [lightName, light] : sdfScene.lightSources) {
         // Direction to light
-        shadowRay.direction = light.position - shadePoint.touchPoint;
+        shadowRay.direction = glm::normalize(light.position - shadePoint.touchPoint);
         for (const auto& [name, shape] : sdfScene.sceneElements) {
 
             // Checking if any light is obscured by other shape
             HitPoint intersectPoint = shape->intersect(shadowRay);
-            offset(intersectPoint);
             // Ignoring luminance of obscured light
             if (intersectPoint.hit) {
                 break;
@@ -127,7 +126,7 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
         }
     }
 
-    offset(minHit);
+    minHit.touchPoint += 0.0001f;
 
     if (minHit.hit) {
         return finalShade = shade(minHit, sdfScene);
@@ -203,8 +202,4 @@ mat4 rotate_vec(float angle, vec3 const& axis)
         result[3] = { 0.f, 0.f, 0.f, 1.f };
     }
     return result;
-}
-
-void offset(HitPoint& hitPoint) {
-    hitPoint.touchPoint += 0.0001f;
 }
