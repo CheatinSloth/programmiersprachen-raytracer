@@ -97,15 +97,17 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
                 // hier oder in raytrace?
                 vec3 norm = glm::normalize(shadePoint.normal);
                 float angle = glm::dot(shadowRay.direction, norm);
+                angle = std::max(angle, 0.f);
 
                 vec3 reflectVec = (2 * angle * shadePoint.normal) - shadowRay.direction;
                 float angle1 = glm::dot(reflectVec, -shadePoint.touchPoint);
 
-                // Summation of all visible light intensities using normalized simple lighting (I = I_p * k_d * (n * I))
-             
-                finalShade.r += light.luminance * (shadePoint.mat->kd.r * angle + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent));
-                finalShade.g += light.luminance * (shadePoint.mat->kd.g * angle + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent));
-                finalShade.b += light.luminance * (shadePoint.mat->kd.b * angle + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent));
+                // Summation of all visible light intensities (I = lightintensity * kd of material * cross(normal * raytolight))
+
+             // Color at point | light intensity  | kd of material   | cross(n*l) |  intensity of ambience |  ka of material      |      (r*v)^m
+                finalShade.r = light.luminance * (shadePoint.mat->kd.r * angle) + (sdfScene.baseLighting.r * shadePoint.mat->ka.r) + pow(angle1, shadePoint.mat->ks.r);
+                finalShade.g = light.luminance * (shadePoint.mat->kd.g * angle) + (sdfScene.baseLighting.g * shadePoint.mat->ka.g) + pow(angle1, shadePoint.mat->ks.g);
+                finalShade.b = light.luminance * (shadePoint.mat->kd.b * angle) + (sdfScene.baseLighting.b * shadePoint.mat->ka.b) + pow(angle1, shadePoint.mat->ks.b);
             }
         }
     }
