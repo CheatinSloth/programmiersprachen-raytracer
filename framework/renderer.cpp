@@ -95,13 +95,17 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
 
                 // Lambert Rule (is this the right place for this?)
                 // hier oder in raytrace?
-                vec3 shadowRayNormal = glm::normalize(shadowRay.direction);
                 vec3 norm = glm::normalize(shadePoint.normal);
+                float angle = glm::dot(shadowRay.direction, norm);
+
+                vec3 reflectVec = (2 * angle * shadePoint.normal) - shadowRay.direction;
+                float angle1 = glm::dot(reflectVec, -shadePoint.touchPoint);
 
                 // Summation of all visible light intensities using normalized simple lighting (I = I_p * k_d * (n * I))
-                finalShade.r += light.luminance * shadePoint.mat->kd.r * (glm::dot(shadowRayNormal, norm));
-                finalShade.g += light.luminance * shadePoint.mat->kd.g * (glm::dot(shadowRayNormal, norm));
-                finalShade.b += light.luminance * shadePoint.mat->kd.b * (glm::dot(shadowRayNormal, norm));
+             
+                finalShade.r += light.luminance * (shadePoint.mat->kd.r * angle + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent));
+                finalShade.g += light.luminance * (shadePoint.mat->kd.g * angle + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent));
+                finalShade.b += light.luminance * (shadePoint.mat->kd.b * angle + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent));
             }
         }
     }
