@@ -92,15 +92,20 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
             {
 
                 vec3 norm = glm::normalize(shadePoint.normal);
-                float angle = glm::dot(shadowRay.direction, norm);
+                vec3 srdnorm = glm::normalize(shadowRay.direction);
+                float angle = glm::dot(srdnorm, norm);
                 angle = std::max(angle, 0.f);
 
                 vec3 reflectVec = 2 *angle * shadePoint.normal - shadowRay.direction;
-                float angle1 = glm::dot(reflectVec, -shadePoint.touchPoint);
+                vec3 rnormed = glm::normalize(reflectVec);
+                vec3 vnormed = glm::normalize(-shadePoint.touchPoint);
+                float angle1 = glm::dot(rnormed, vnormed);
 
-                finalShade.r = (sdfScene.baseLighting.r * shadePoint.mat->ka.r) + light.luminance * ((shadePoint.mat->kd.r * angle) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent));
-                finalShade.g = (sdfScene.baseLighting.g * shadePoint.mat->ka.g) + light.luminance * ((shadePoint.mat->kd.g * angle) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent));
-                finalShade.b = (sdfScene.baseLighting.b * shadePoint.mat->ka.b) + light.luminance * ((shadePoint.mat->kd.b * angle) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent));
+
+
+                finalShade.r = (sdfScene.baseLighting.r * shadePoint.mat->ka.r) + (light.luminance * light.hue.r) * ((shadePoint.mat->kd.r * angle) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent));
+                finalShade.g = (sdfScene.baseLighting.g * shadePoint.mat->ka.g) + (light.luminance * light.hue.g) * ((shadePoint.mat->kd.g * angle) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent));
+                finalShade.b = (sdfScene.baseLighting.b * shadePoint.mat->ka.b) + (light.luminance * light.hue.b) * ((shadePoint.mat->kd.b * angle) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent));
             }
 
         }
