@@ -5,7 +5,6 @@
 #include <string>
 #include <cmath>
 
-
 struct Camera {
 	std::string name;
 	float angle { 40.0f };

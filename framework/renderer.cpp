@@ -9,6 +9,11 @@
 
 #include "renderer.hpp"
 
+////////////////////////////////////////////////
+//                    TODO                    
+//  1. Box Dimensionen überprüfen
+//  2. Reflektion (Refraktion?) einbauen
+//  3. Transformationen integrieren
 
 Renderer::Renderer(unsigned w, unsigned h, std::string const& file)
   : width_(w)
@@ -53,17 +58,6 @@ void Renderer::write(Pixel const& p)
   }
   ppm_.write(p);
 }
-
-////////////////////////
-/*
- TODO: 
- - Shade muss vollständig implementiert werden (Phong Modell)
- 
- - Box::intersect() nochmal überprüfen, vor allem normalen für seiten 
-
- - Erweiterungen fuer Reflektion/Refraktion später mit einbauen
-
-*/
 
 Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
     Color finalShade{
