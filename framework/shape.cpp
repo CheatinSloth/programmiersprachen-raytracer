@@ -73,7 +73,7 @@ HitPoint const Sphere::intersect(Ray const& r)
     float t;
     vec3 hitpoint, hitnormal;
     Ray rayTrans{transformRay(world_transformation_inv_, r)};
-    vec3 normalizedDirection = glm::normalize(rayTrans.direction);
+    vec3 normalizedDirection = glm::normalize(r.direction);
 
     if (glm::intersectRaySphere(r.origin, normalizedDirection, center_, radius_, hitpoint, hitnormal)) {
    
@@ -84,10 +84,9 @@ HitPoint const Sphere::intersect(Ray const& r)
 
         mat4 transp = glm::transpose(world_transformation_inv_);
         vec3 normalTrans(transp * glm::vec4{ normalVec.x, normalVec.y, normalVec.z, 0.f });
-        normalVec = glm::normalize(normalTrans);
+        normalVec = glm::normalize(normalVec);
 
-
-        return HitPoint{ true, t, name_, mat_, hitpoint, normalizedDirection, normalVec };
+        return HitPoint{ true, t, name_, mat_, hitpoint, normalizedDirection, hitnormal };
     }
     else
         return HitPoint{};
@@ -134,6 +133,7 @@ float const Box::volume()
 }
 
 HitPoint const Box::intersect(Ray const& r) {
+
     Ray rayTrans{ transformRay(world_transformation_inv_, r) };
     float shortest_dis = INFINITY;
     float distances[6];
@@ -229,7 +229,7 @@ HitPoint const Box::intersect(Ray const& r) {
         return HitPoint{};
     }
 
-}
+ }
 
 Ray transformRay(glm::mat4 const& mat, Ray const& ray)
 {

@@ -71,6 +71,8 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
         shadePoint.mat->ka.g * sdfScene.baseLighting.g,
         shadePoint.mat->ka.b * sdfScene.baseLighting.b
     };
+    int totalLuminance = 0;
+    Color totalHue = { sdfScene.baseLighting };
     shadePoint.touchPoint += 0.0001f;
 
     Ray shadowRay{ shadePoint.touchPoint, {0.0f, 0.0f, 0.0f} };
@@ -80,35 +82,39 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
         shadowRay.direction = glm::normalize(light.position - shadePoint.touchPoint);
         for (const auto& [name, shape] : sdfScene.sceneElements) {
 
-
             // Checking if any light is obscured by other shape
             HitPoint intersectPoint = shape->intersect(shadowRay);
             // Ignoring luminance of obscured light
 
             if (intersectPoint.hit) {
-                return finalShade;
+                continue;
             }
 
             else
             {
+                totalLuminance += light.luminance;
+                totalHue.r *= light.hue.r;
+                totalHue.g *= light.hue.g;
+                totalHue.b *= light.hue.b;
 
-                vec3 norm = glm::normalize(shadePoint.normal);
-                vec3 srdnorm = glm::normalize(shadowRay.direction);
-                float angle = glm::dot(srdnorm, norm);
-                angle = std::max(angle, 0.f);
-
-                vec3 reflectVec = 2 * angle * shadePoint.normal - shadowRay.direction;
-                vec3 rnormed = glm::normalize(reflectVec);
-                vec3 vnormed = glm::normalize(-shadePoint.touchPoint);
-                float angle1 = glm::dot(rnormed, vnormed);
-
-                finalShade.r = (sdfScene.baseLighting.r * shadePoint.mat->ka.r) + (light.luminance * light.hue.r) * ((shadePoint.mat->kd.r * angle) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent));
-                finalShade.g = (sdfScene.baseLighting.g * shadePoint.mat->ka.g) + (light.luminance * light.hue.g) * ((shadePoint.mat->kd.g * angle) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent));
-                finalShade.b = (sdfScene.baseLighting.b * shadePoint.mat->ka.b) + (light.luminance * light.hue.b) * ((shadePoint.mat->kd.b * angle) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent));
             }
 
         }
     }
+
+    vec3 norm = glm::normalize(shadePoint.normal);
+    vec3 srdnorm = shadowRay.direction;
+    float angle = glm::dot(srdnorm, norm);
+    angle = std::max(angle, 0.f);
+
+    vec3 reflectVec = 2 * angle * shadePoint.normal - shadowRay.direction;
+    vec3 rnormed = glm::normalize(reflectVec);
+    vec3 vnormed = glm::normalize(-shadePoint.touchPoint);
+    float angle1 = glm::dot(rnormed, vnormed);
+
+    finalShade.r += (totalLuminance * totalHue.r) * ((shadePoint.mat->kd.r * angle)) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent);
+    finalShade.g += (totalLuminance * totalHue.g) * ((shadePoint.mat->kd.g * angle)) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent);
+    finalShade.b += (totalLuminance * totalHue.b) * ((shadePoint.mat->kd.b * angle)) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent);
 
     // HDR Color correcting
     finalShade.r = finalShade.r / (finalShade.r + 1);
@@ -151,9 +157,9 @@ Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance)
 
     // Create Camera movement
     mat4 camTrans{ camera.transform() };
-
-    return Ray{ transformRay(camTrans, {camera.position, {directionVec}}) };
-}
+    return Ray{ camera.position, directionVec };
+    //return Ray{ transformRay(camTrans, {camera.position, {directionVec}}) };
+}   
 
 mat4 translate_vec(vec3 const& translation)
 {
