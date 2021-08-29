@@ -84,6 +84,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
             // Checking if any light is obscured by other shape
             HitPoint intersectPoint = shape->intersect(shadowRay);
             // Ignoring luminance of obscured light
+
             if (intersectPoint.hit) {
                 return finalShade;
             }
@@ -96,12 +97,10 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
                 float angle = glm::dot(srdnorm, norm);
                 angle = std::max(angle, 0.f);
 
-                vec3 reflectVec = 2 *angle * shadePoint.normal - shadowRay.direction;
+                vec3 reflectVec = 2 * angle * shadePoint.normal - shadowRay.direction;
                 vec3 rnormed = glm::normalize(reflectVec);
                 vec3 vnormed = glm::normalize(-shadePoint.touchPoint);
                 float angle1 = glm::dot(rnormed, vnormed);
-
-
 
                 finalShade.r = (sdfScene.baseLighting.r * shadePoint.mat->ka.r) + (light.luminance * light.hue.r) * ((shadePoint.mat->kd.r * angle) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent));
                 finalShade.g = (sdfScene.baseLighting.g * shadePoint.mat->ka.g) + (light.luminance * light.hue.g) * ((shadePoint.mat->kd.g * angle) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent));
@@ -110,7 +109,6 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
 
         }
     }
-
 
     // HDR Color correcting
     finalShade.r = finalShade.r / (finalShade.r + 1);
