@@ -65,6 +65,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
         shadePoint.mat->ka.g * sdfScene.baseLighting.g,
         shadePoint.mat->ka.b * sdfScene.baseLighting.b
     };
+
     int totalLuminance = 0;
     Color totalHue = { sdfScene.baseLighting };
     shadePoint.touchPoint += 0.0001f;
@@ -83,16 +84,13 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
             if (intersectPoint.hit) {
                 continue;
             }
-
             else
             {
                 totalLuminance += light.luminance;
                 totalHue.r *= light.hue.r;
                 totalHue.g *= light.hue.g;
                 totalHue.b *= light.hue.b;
-
             }
-
         }
     }
 
@@ -138,7 +136,6 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
     }
     else
     return finalShade;
-   
 }
 
 Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {
@@ -207,4 +204,29 @@ mat4 rotate_vec(float angle, vec3 const& axis)
         result[3] = { 0.f, 0.f, 0.f, 1.f };
     }
     return result;
+}
+
+Scene transform_Elements (vec3 const& translation, float rotAngle, vec3 const& rotAxis, vec3 const& scale, Scene const& sdfScene){
+
+    Scene finalScene;                           //just so i dont get return errors rn
+    int shapekind;                              //int for switch case later to differentiate between shapes for different transforms
+    mat4 transMat = translate_vec(translation); //getting translation mat
+    mat4 rotMat = rotate_vec(rotAngle, rotAxis);//getting rotation mat
+    mat4 scaleMat = scale_vec(scale);           //you get it
+
+    mat4 transformMat = transMat * rotMat * scaleMat;
+
+    /* still wonky
+        for (const auto& [name, shape] : sdfScene.sceneElements) {
+
+            if(shape.get() == Box) {    //its a Box and we transform min and max
+
+            }
+            else{                       //its a Sphere and we transform the center
+
+            }
+        }
+        return finalScene;
+
+    */
 }

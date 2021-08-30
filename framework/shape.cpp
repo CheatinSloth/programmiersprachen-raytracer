@@ -215,7 +215,7 @@ HitPoint const Box::intersect(Ray const& r) {
     }
 
     t = shortest_dis;
-    vec3 point = (r.origin + t * r.direction ) - 0.0001f;
+    vec3 point = (r.origin + t * r.direction ) - 0.0002f; //kp sieht irgendwie cleaner aus kann aber auch Laptop Bildschirm sein
     vec3 normalTrans{r.origin + t * rayTrans.direction};
 
     if (point.y >= min_.y && point.y <= max_.y) {

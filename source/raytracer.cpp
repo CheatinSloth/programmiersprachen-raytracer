@@ -161,7 +161,7 @@ void parse(string const& fileName, Scene& sdfScene, Renderer& renderer) {
 			}
 			if (instructions[1] == "rotate") {
 				if (instructions.size() != 6) {
-					cout << "Incorrect instruction syntax. Transformation translate requires 6 tokens." << endl;
+					cout << "Incorrect instruction syntax. Transformation rotate requires 6 tokens." << endl;
 				}
 			}
 			}
