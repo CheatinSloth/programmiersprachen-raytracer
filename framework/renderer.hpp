@@ -50,7 +50,4 @@ mat4 translate_vec(vec3 const& translation);
 mat4 scale_vec(vec3 const& scale);
 mat4 rotate_vec(float angle, vec3 const& direction);
 
-// fixes specks on some objects
-void offset(HitPoint& hitPoint);
-
 #endif // #ifndef BUW_RENDERER_HPP

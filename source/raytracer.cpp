@@ -63,8 +63,8 @@ void parse(string const& fileName, Scene& sdfScene, Renderer& renderer) {
 						break;
 					}
 
-					sdfScene.sceneElements.emplace(instructions[3],													// Places Box at name
-						new Box({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },			// min
+					sdfScene.sceneElements.emplace(instructions[3],												// Places Box at name
+						new Box({ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },		// min
 							{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },			// max
 							sdfScene.sceneMaterial.at(instructions[10]),										// Material
 							instructions[3]));																	// name
@@ -97,16 +97,18 @@ void parse(string const& fileName, Scene& sdfScene, Renderer& renderer) {
 							{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },					// direction
 							{ stof(instructions[10]), stof(instructions[11]), stof(instructions[12]) },					// up
 							800,																						// resolutionV
-							600 
-						};																						// resolutionH
+							600																							// resolutionH
+						};																						
 
 						sdfScene.sceneCameras.emplace(instructions[2], sdfCamera);
 					}
 
-					if (instructions.size() == 4) {
-						Camera sdfCamera{ instructions[2], stof(instructions[3]) };
+					else if (instructions.size() == 4) {
+						Camera sdfCamera{ instructions[2],																// Name
+										stof(instructions[3]) };														// Angle
 						sdfScene.sceneCameras.emplace(instructions[2], sdfCamera);
 					}
+
 					else {
 						cout << "Incorrect instruction syntax. Camera requires 4 or 13 tokens." << endl;
 					}
@@ -209,6 +211,7 @@ int main(int argc, char* argv[])
   cout << scene.sceneMaterial.size() << " Materials in scene" << endl;
   cout << scene.sceneElements.size() << " Elements in scene" << endl;
   cout << scene.lightSources.size() << " Lights in scene" << endl;
+  cout << scene.sceneCameras.size() << " Cameras in scene" << endl;
 
   Window window{{image_width, image_height}};
 
