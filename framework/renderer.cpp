@@ -66,9 +66,6 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
         shadePoint.mat->ka.b * sdfScene.baseLighting.b
     };
 
-    bool reflect = false;
-    Color reflectedColor{0.f, 0.f, 0.f};
-
     int totalLuminance = 0;
     Color totalHue = { sdfScene.baseLighting };
     shadePoint.touchPoint += 0.0001f;
@@ -89,16 +86,6 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
             }
             else
             {
-                if (shadePoint.mat->reflectivity > 0.f && recursion < 5) {
-                    reflect = true;
-                    vec3 toCam = glm::normalize(-shadePoint.touchPoint);
-                    float cosine = glm::dot(toCam, shadePoint.normal);
-                    vec3 direction = (shadePoint.normal * cosine * 2.f) - toCam;
-                    reflectedColor = raytrace({shadePoint.touchPoint, direction}, sdfScene, recursion + 1);
-                    reflectedColor.r *= shadePoint.mat->reflectivity;
-                    reflectedColor.g *= shadePoint.mat->reflectivity;
-                    reflectedColor.b *= shadePoint.mat->reflectivity;
-                }
                 totalLuminance += light.luminance;
                 totalHue.r *= light.hue.r;
                 totalHue.g *= light.hue.g;
@@ -115,18 +102,12 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
     vec3 reflectVec = 2 * angle * shadePoint.normal - shadowRay.direction;
     vec3 rnormed = glm::normalize(reflectVec);
     vec3 vnormed = glm::normalize(-shadePoint.touchPoint);
-    float angle1 = glm::dot(rnormed, vnormed);
+    float angle1 = glm::dot(rnormed, vnormed);    
 
     // Phong illumination
     finalShade.r += (totalLuminance * totalHue.r) * ((shadePoint.mat->kd.r * angle)) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent);
     finalShade.g += (totalLuminance * totalHue.g) * ((shadePoint.mat->kd.g * angle)) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent);
     finalShade.b += (totalLuminance * totalHue.b) * ((shadePoint.mat->kd.b * angle)) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent);
-
-    if (reflect) {
-        finalShade.r += reflectedColor.r;
-        finalShade.g += reflectedColor.g;
-        finalShade.b += reflectedColor.b;
-    }
 
     // HDR Color correcting
     finalShade.r = finalShade.r / (finalShade.r + 1);
@@ -138,7 +119,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
 
 
 Color raytrace(Ray const& ray, Scene const& sdfScene, int recursion) {
-   
+    bool reflect = false;
     HitPoint temp;
     HitPoint minHit;
     Color finalShade{ sdfScene.baseLighting };
@@ -152,8 +133,21 @@ Color raytrace(Ray const& ray, Scene const& sdfScene, int recursion) {
 
     minHit.touchPoint += 0.0001f;
 
-    if (minHit.hit && recursion <= 5) {
-        return finalShade = shade(minHit, sdfScene, recursion);
+    if (minHit.hit) {
+        finalShade = shade(minHit, sdfScene, recursion);
+
+        if (minHit.mat->reflectivity > 0.f && recursion <= 10) {
+            vec3 toCam = glm::normalize(-minHit.touchPoint);
+            float cosine = glm::dot(toCam, minHit.normal);
+            vec3 direction = (minHit.normal * cosine * 2.f) - toCam;
+            Color reflectedColor = raytrace({ minHit.touchPoint, direction }, sdfScene, recursion + 1);
+
+            finalShade.r += minHit.mat->reflectivity * reflectedColor.r;
+            finalShade.g += minHit.mat->reflectivity * reflectedColor.g;
+            finalShade.b += minHit.mat->reflectivity * reflectedColor.b;
+        }
+        return finalShade;
+        
     }
     else
     return finalShade;

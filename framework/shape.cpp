@@ -99,7 +99,9 @@ max_ { 20.0f, 20.0f, 20.0f } {}
 
 Box::Box(vec3 const& min, vec3 const& max) :
 Shape(),
+// smallest coordinate tuple | in -z: (bottom left corner furthest from viewer)
 min_{ min },
+// largest coordinate tuple | in -z: (top left corner closest to viewer)
 max_ { max }{}
 
 Box::Box(vec3 const& min, vec3 const& max, std::shared_ptr<Material> const& mats) :
@@ -167,14 +169,14 @@ HitPoint const Box::intersect(Ray const& r) {
     vec = point_y_max - r.origin;
     distances[3] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
-    // front
+    // back (in -z)
     float z_min = min_.z;
     t = (z_min - r.origin.z) / r.direction.z;
     glm::vec3 point_z_min = r.origin + t * r.direction;
     vec = point_z_min - r.origin;
     distances[4] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
 
-    // back
+    // front (in -z)
     float z_max = max_.z;
     t = (z_max - r.origin.z) / r.direction.z;
     glm::vec3 point_z_max = r.origin + t * r.direction;
@@ -208,9 +210,9 @@ HitPoint const Box::intersect(Ray const& r) {
         sideNorm = { 0.f, -1.0f, 0.0f };
     case 3: // top
         sideNorm = { 0.0f, 1.0f, 0.f };
-    case 4: // front
+    case 4: // back
         sideNorm = { 0.f, 0.f, 1.f };
-    case 5: // back
+    case 5: // front
         sideNorm = { 0.f, 0.f, -1.f };
     }
 

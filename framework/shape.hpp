@@ -63,7 +63,9 @@ public:
     HitPoint const intersect(Ray const& ray) override;
 
 protected:
+    // smallest coordinate tuple | in -z: (bottom right corner furthest from viewer)
     vec3 min_;
+    // largest coordinate tuple | in -z: (top left corner closest to viewer)
     vec3 max_;
 };
 
