@@ -11,8 +11,8 @@
 
 ////////////////////////////////////////////////
 //                    TODO                    
-//  1. Box Dimensionen überprüfen
-//  2. Reflektion (Refraktion?) einbauen
+//  1. Box Dimensionen überprüfen!!!!!
+//  2. Reflektion fertigstellen
 //  3. Transformationen integrieren
 
 Renderer::Renderer(unsigned w, unsigned h, std::string const& file)
