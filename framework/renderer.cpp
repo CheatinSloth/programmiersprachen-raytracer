@@ -66,8 +66,12 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
         shadePoint.mat->ka.b * sdfScene.baseLighting.b
     };
 
+    if (recursion >= 5) {
+        return finalShade;
+    }
+
     bool reflect = false;
-    Color reflectedColor;
+    Color reflectedColor{0.f, 0.f, 0.f};
 
     int totalLuminance = 0;
     Color totalHue = { sdfScene.baseLighting };
@@ -89,12 +93,13 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
             }
             else
             {
-                if (shadePoint.mat->reflectivity > 0.f) {
+               /* if (shadePoint.mat->reflectivity > 0.f) {
                     reflect = true;
-                    float cosine = glm::dot(-shadePoint.touchPoint, shadePoint.normal);
-                    vec3 direction = shadePoint.normal * cosine;
+                    vec3 toCam = glm::normalize(-shadePoint.touchPoint);
+                    float cosine = glm::dot(toCam, shadePoint.normal);
+                    vec3 direction = (shadePoint.normal * cosine * 2.f) - toCam;
                     reflectedColor = raytrace({shadePoint.touchPoint, direction}, sdfScene, recursion + 1);
-                }
+                }*/
                 totalLuminance += light.luminance;
                 totalHue.r *= light.hue.r;
                 totalHue.g *= light.hue.g;
@@ -118,11 +123,11 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
     finalShade.g += (totalLuminance * totalHue.g) * ((shadePoint.mat->kd.g * angle)) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent);
     finalShade.b += (totalLuminance * totalHue.b) * ((shadePoint.mat->kd.b * angle)) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent);
 
-    if (reflect) {
-        finalShade.r = reflectedColor.r;
-        finalShade.g = reflectedColor.g;
-        finalShade.b = reflectedColor.b;
-    }
+    /*if (reflect) {
+        finalShade.r += reflectedColor.r;
+        finalShade.g += reflectedColor.g;
+        finalShade.b += reflectedColor.b;
+    }*/
 
     // HDR Color correcting
     finalShade.r = finalShade.r / (finalShade.r + 1);
