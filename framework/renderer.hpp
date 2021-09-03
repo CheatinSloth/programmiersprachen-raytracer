@@ -42,8 +42,8 @@ private:
   PpmWriter ppm_;
 };
 
-Color shade(HitPoint& shadePoint, Scene const& sdfScene);
-Color raytrace(Ray const& ray, Scene const& sdfScene);
+Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion);
+Color raytrace(Ray const& ray, Scene const& sdfScene, int recursion);
 
 // Transformations 
 mat4 translate_vec(vec3 const& translation);

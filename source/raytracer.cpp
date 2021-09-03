@@ -73,8 +73,8 @@ void parse(string const& fileName, Scene& sdfScene, Renderer& renderer) {
 
 				// Block for creating Material and adding it to sceneMaterials map
 				else if (instructions[1] == "material") {
-					if (instructions.size() != 13) {
-						cout << "Incorrect instruction syntax. Material requires 13 tokens." << endl;
+					if (instructions.size() != 14) {
+						cout << "Incorrect instruction syntax. Material requires 14 tokens." << endl;
 						break;
 					}
 					Material sdfMaterial{
@@ -82,7 +82,7 @@ void parse(string const& fileName, Scene& sdfScene, Renderer& renderer) {
 						{ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) },					// ka
 						{ stof(instructions[6]), stof(instructions[7]), stof(instructions[8]) },					// kd
 						{ stof(instructions[9]), stof(instructions[10]), stof(instructions[11]) },					// ks
-						stof(instructions[12]) };																	// reflectionExponent
+						stof(instructions[12]), stof(instructions[13]) };																	// reflectionExponent
 
 					sdfScene.sceneMaterial.emplace(instructions[2], make_shared<Material>(sdfMaterial));
 

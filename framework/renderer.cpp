@@ -37,7 +37,7 @@ void Renderer::render(Scene const& scene, Camera const& camera)
           p.color = color{ 1.0f, 0.0f, float(y) / width_ };
 
       }*/
-      p.color = raytrace(make_cam_ray(p, camera, camera.dist()), scene);
+      p.color = raytrace(make_cam_ray(p, camera, camera.dist()), scene, 0);
       write(p);
     }
   }
@@ -59,12 +59,15 @@ void Renderer::write(Pixel const& p)
   ppm_.write(p);
 }
 
-Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
+Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
     Color finalShade{
         shadePoint.mat->ka.r * sdfScene.baseLighting.r,
         shadePoint.mat->ka.g * sdfScene.baseLighting.g,
         shadePoint.mat->ka.b * sdfScene.baseLighting.b
     };
+
+    bool reflect = false;
+    Color reflectedColor;
 
     int totalLuminance = 0;
     Color totalHue = { sdfScene.baseLighting };
@@ -86,6 +89,12 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
             }
             else
             {
+                if (shadePoint.mat->reflectivity > 0.f) {
+                    reflect = true;
+                    float cosine = glm::dot(-shadePoint.touchPoint, shadePoint.normal);
+                    vec3 direction = shadePoint.normal * cosine;
+                    reflectedColor = raytrace({shadePoint.touchPoint, direction}, sdfScene, recursion + 1);
+                }
                 totalLuminance += light.luminance;
                 totalHue.r *= light.hue.r;
                 totalHue.g *= light.hue.g;
@@ -104,9 +113,16 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
     vec3 vnormed = glm::normalize(-shadePoint.touchPoint);
     float angle1 = glm::dot(rnormed, vnormed);
 
+    // Phong illumination
     finalShade.r += (totalLuminance * totalHue.r) * ((shadePoint.mat->kd.r * angle)) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent);
     finalShade.g += (totalLuminance * totalHue.g) * ((shadePoint.mat->kd.g * angle)) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent);
     finalShade.b += (totalLuminance * totalHue.b) * ((shadePoint.mat->kd.b * angle)) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent);
+
+    if (reflect) {
+        finalShade.r = reflectedColor.r;
+        finalShade.g = reflectedColor.g;
+        finalShade.b = reflectedColor.b;
+    }
 
     // HDR Color correcting
     finalShade.r = finalShade.r / (finalShade.r + 1);
@@ -117,7 +133,8 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene) {
 }
 
 
-Color raytrace(Ray const& ray, Scene const& sdfScene) {
+Color raytrace(Ray const& ray, Scene const& sdfScene, int recursion) {
+   
     HitPoint temp;
     HitPoint minHit;
     Color finalShade{ sdfScene.baseLighting };
@@ -131,8 +148,8 @@ Color raytrace(Ray const& ray, Scene const& sdfScene) {
 
     minHit.touchPoint += 0.0001f;
 
-    if (minHit.hit) {
-        return finalShade = shade(minHit, sdfScene);
+    if (minHit.hit && recursion <= 5) {
+        return finalShade = shade(minHit, sdfScene, recursion);
     }
     else
     return finalShade;
@@ -204,29 +221,4 @@ mat4 rotate_vec(float angle, vec3 const& axis)
         result[3] = { 0.f, 0.f, 0.f, 1.f };
     }
     return result;
-}
-
-Scene transform_Elements (vec3 const& translation, float rotAngle, vec3 const& rotAxis, vec3 const& scale, Scene const& sdfScene){
-
-    Scene finalScene;                           //just so i dont get return errors rn
-    int shapekind;                              //int for switch case later to differentiate between shapes for different transforms
-    mat4 transMat = translate_vec(translation); //getting translation mat
-    mat4 rotMat = rotate_vec(rotAngle, rotAxis);//getting rotation mat
-    mat4 scaleMat = scale_vec(scale);           //you get it
-
-    mat4 transformMat = transMat * rotMat * scaleMat;
-
-    /* still wonky
-        for (const auto& [name, shape] : sdfScene.sceneElements) {
-
-            if(shape.get() == Box) {    //its a Box and we transform min and max
-
-            }
-            else{                       //its a Sphere and we transform the center
-
-            }
-        }
-        return finalScene;
-
-    */
 }
