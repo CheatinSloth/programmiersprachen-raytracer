@@ -28,8 +28,12 @@ public:
 protected: 
     string name_;
     std::shared_ptr<Material> mat_;
-    mat4 world_transformation_;
-    mat4 world_transformation_inv_;
+    mat4 world_transformation_{ 1.0f, 0.f, 0.f, 0.f,
+                                0.0f, 1.f, 0.f, 0.f,
+                                0.0f, 0.f, 1.f, 0.f,
+                                0.0f, 0.f, 0.f, 1.f 
+    };
+    mat4 world_transformation_inv_{glm::inverse(world_transformation_)};
 };
 
 class Sphere : public Shape {
