@@ -99,7 +99,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
     float angle = glm::dot(srdnorm, norm);
     angle = std::max(angle, 0.f);
 
-    vec3 reflectVec = 2 * angle * shadePoint.normal - shadowRay.direction;
+    vec3 reflectVec = (2 * angle * shadePoint.normal) - shadowRay.direction;
     vec3 rnormed = glm::normalize(reflectVec);
     vec3 vnormed = glm::normalize(-shadePoint.touchPoint);
     float angle1 = glm::dot(rnormed, vnormed);    
@@ -139,7 +139,7 @@ Color raytrace(Ray const& ray, Scene const& sdfScene, int recursion) {
         if (minHit.mat->reflectivity > 0.f && recursion <= 10) {
             vec3 toCam = glm::normalize(-minHit.touchPoint);
             float cosine = glm::dot(toCam, minHit.normal);
-            vec3 direction = (minHit.normal * cosine * 2.f) - toCam;
+            vec3 direction = toCam - (minHit.normal * cosine * 2.f);
             Color reflectedColor = raytrace({ minHit.touchPoint, direction }, sdfScene, recursion + 1);
 
             finalShade.r += minHit.mat->reflectivity * reflectedColor.r;
@@ -163,8 +163,8 @@ Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance)
 
     // Create Camera movement
     mat4 camTrans{ camera.transform() };
-    return Ray{ camera.position, directionVec };
-    //return Ray{ transformRay(camTrans, {camera.position, {directionVec}}) };
+    //return Ray{ camera.position, directionVec };
+    return Ray{ transformRay(camTrans, {camera.position, {directionVec}}) };
 }   
 
 mat4 translate_vec(vec3 const& translation)
