@@ -23,6 +23,16 @@ std::ostream& Shape::print(std::ostream& os) const
     return os;
 }
 
+void Shape::set_world_mat(mat4 worldMat)
+{
+    world_transformation_ = worldMat;
+}
+
+void Shape::set_world_inv()
+{
+    world_transformation_inv_ = glm::inverse(world_transformation_);
+}
+
 Sphere::Sphere() :
 Shape(),
 center_{ 10.0f, 10.0f, 10.0f },

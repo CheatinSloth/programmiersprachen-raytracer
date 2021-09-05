@@ -24,6 +24,8 @@ public:
     virtual float const volume() = 0;
     virtual std::ostream& print(std::ostream& os) const;
     virtual HitPoint const intersect(Ray const& ray) = 0;
+    void set_world_mat(mat4 worldMat);
+    void set_world_inv();
 	
 protected: 
     string name_;
