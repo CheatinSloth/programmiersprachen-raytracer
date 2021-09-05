@@ -201,21 +201,21 @@ mat4 rotate_vec(float angle, vec3 const& axis)
     // Checking along which axis to rotate
 
     // x-axis
-    if (axis.x == 1.f && axis.y == 0 && axis.z == 0) {
+    if (axis.x == 1.f && axis.y == 0.f && axis.z == 0.f) {
         result[0] = { 1.f, 0.f, 0.f, 0.f };
         result[1] = { 0.f, cos(angle / 2.f * M_PI / 180.f), sin(angle / 2.f * M_PI / 180.f), 0.f };
         result[2] = { 0.f, -sin(angle / 2.f * M_PI / 180.f), cos(angle / 2.f * M_PI / 180.f), 0.f };
         result[3] = { 0.f, 0.f, 0.f, 1.f };
     }
     // y-Axis
-    if (axis.x == 0 && axis.y == 1.f && axis.z == 0) {
+    if (axis.x == 0.f && axis.y == 1.f && axis.z == 0.f) {
         result[0] = { 0.f, cos(angle / 2.f * M_PI / 180.f), -sin(angle / 2.f * M_PI / 180.f), 0.f };
         result[1] = { 0.f, 1.f, 0.f, 0.f };
         result[2] = { 0.f, sin(angle / 2.f * M_PI / 180.f), cos(angle / 2.f * M_PI / 180.f), 0.f };
         result[3] = { 0.f, 0.f, 0.f, 1.f };
     }
     // z-Axis
-    if (axis.x == 0 && axis.y == 0 && axis.z == 1.f) {
+    if (axis.x == 0.f && axis.y == 0.f && axis.z == 1.f) {
         result[0] = { 0.f, cos(angle / 2.f * M_PI / 180.f), sin(angle / 2.f * M_PI / 180.f), 0.f };
         result[1] = { 0.f, -sin(angle / 2.f * M_PI / 180.f), cos(angle / 2.f * M_PI / 180.f), 0.f };
         result[2] = { 0.f, 0.f, 1.f, 0.f };
