@@ -66,13 +66,12 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, Camera const& cam, int 
         shadePoint.mat->ka.b * sdfScene.baseLighting.b
     };
 
-    int totalLuminance = 1;
-    Color totalHue = { sdfScene.baseLighting };
     shadePoint.touchPoint += 0.01f * shadePoint.normal;
 
     Ray shadowRay{ shadePoint.touchPoint, {0.0f, 0.0f, 0.0f} };
 
     for (const auto& [lightName, light] : sdfScene.lightSources) {
+
         // Direction to light
         bool obstructed = false;
         shadowRay.direction = glm::normalize(light.position - shadePoint.touchPoint);
@@ -89,43 +88,38 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, Camera const& cam, int 
             }
         }
         if (obstructed) {
-            
+
         }
         else {
-            totalLuminance += light.luminance;
-            totalHue.r *= light.hue.r;
-            totalHue.g *= light.hue.g;
-            totalHue.b *= light.hue.b;
 
+            vec3 norm = glm::normalize(shadePoint.normal);
+            float angle = glm::dot(shadowRay.direction, norm);
+            angle = std::max(angle, 0.f);
+
+            // version 2
+            vec3 light_vec = glm::normalize(shadowRay.direction);
+            vec3 hitpointNormal = shadePoint.normal;
+            float angleofVecs = glm::dot(light_vec, hitpointNormal);
+            vec3 stinkypoopoo = 2 * angleofVecs * hitpointNormal - light_vec;
+            vec3 v = glm::normalize(cam.position - shadePoint.touchPoint);
+            float angle1 = glm::dot(stinkypoopoo, v);
+
+
+
+            // Phong illumination
+            finalShade.r += ((light.luminance + 1) * light.hue.r * sdfScene.baseLighting.r) * (((shadePoint.mat->kd.r * angle)) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent));
+            finalShade.g += ((light.luminance + 1) * light.hue.g * sdfScene.baseLighting.g) * (((shadePoint.mat->kd.g * angle)) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent));
+            finalShade.b += ((light.luminance + 1) * light.hue.b * sdfScene.baseLighting.b) * (((shadePoint.mat->kd.b * angle)) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent));
         }
-    }
-
-    vec3 norm = glm::normalize(shadePoint.normal);
-    float angle = glm::dot(shadowRay.direction, norm);
-    angle = std::max(angle, 0.f);
-
-    glm::vec4 vec4Normal = { shadowRay.direction.x, shadowRay.direction.y, shadowRay.direction.z, 0.f };
-    mat4 rotateMat = glm::rotate((float)M_PI, shadePoint.normal);
-    vec4Normal = rotateMat * vec4Normal;
-    vec3 reflectVec = (glm::vec3{vec4Normal});
-
-    vec3 rnormed = glm::normalize(reflectVec);
-    vec3 vnormed = glm::normalize(cam.position - shadePoint.touchPoint);
-    float angle1 = abs(glm::dot(rnormed, vnormed));
-
-    // Phong illumination
-    finalShade.r += (totalLuminance * totalHue.r) * ((shadePoint.mat->kd.r * angle)) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent);
-    finalShade.g += (totalLuminance * totalHue.g) * ((shadePoint.mat->kd.g * angle)) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent);
-    finalShade.b += (totalLuminance * totalHue.b) * ((shadePoint.mat->kd.b * angle)) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent);
+    }    
 
     // HDR Color correcting
-    finalShade.r = finalShade.r / (finalShade.r + 1);
-    finalShade.g = finalShade.g / (finalShade.g + 1);
-    finalShade.b = finalShade.b / (finalShade.b + 1);
+    finalShade.r = finalShade.r / (finalShade.r + 1.f);
+    finalShade.g = finalShade.g / (finalShade.g + 1.f);
+    finalShade.b = finalShade.b / (finalShade.b + 1.f);
 
     return finalShade;
 }
-
 
 Color raytrace(Ray const& ray, Scene const& sdfScene, Camera const& cam, int recursion) {
     bool reflect = false;
@@ -147,16 +141,16 @@ Color raytrace(Ray const& ray, Scene const& sdfScene, Camera const& cam, int rec
     if (minHit.hit) {
         finalShade = shade(minHit, sdfScene, cam, recursion);
 
-        /*if (minHit.mat->reflectivity > 0.f && recursion <= 10) {
+        if (minHit.mat->reflectivity > 0.f && recursion <= 10) {
             vec3 toCam = glm::normalize(-minHit.touchPoint);
             float cosine = glm::dot(toCam, minHit.normal);
             vec3 direction = toCam - (minHit.normal * cosine * 2.f);
-            Color reflectedColor = raytrace({ minHit.touchPoint, direction }, sdfScene, recursion + 1);
+            Color reflectedColor = raytrace({ minHit.touchPoint, direction }, sdfScene, cam, recursion + 1);
 
             finalShade.r += minHit.mat->reflectivity * reflectedColor.r;
             finalShade.g += minHit.mat->reflectivity * reflectedColor.g;
             finalShade.b += minHit.mat->reflectivity * reflectedColor.b;
-        }*/
+        }
         return finalShade;
 
     }
