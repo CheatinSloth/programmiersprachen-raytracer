@@ -100,9 +100,9 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, Camera const& cam, int 
             vec3 light_vec = glm::normalize(shadowRay.direction);
             vec3 hitpointNormal = shadePoint.normal;
             float angleofVecs = glm::dot(light_vec, hitpointNormal);
-            vec3 stinkypoopoo = 2 * angleofVecs * hitpointNormal - light_vec;
-            vec3 v = glm::normalize(cam.position - shadePoint.touchPoint);
-            float angle1 = glm::dot(stinkypoopoo, v);
+            vec3 reflectVec = 2 * angleofVecs * hitpointNormal - light_vec;
+            vec3 camVec = glm::normalize(cam.position - shadePoint.touchPoint);
+            float angle1 = glm::dot(reflectVec, camVec);
 
 
 
