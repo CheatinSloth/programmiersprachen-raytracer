@@ -93,7 +93,7 @@ void parse(string const& fileName, Scene& sdfScene, Renderer& renderer) {
 						Camera sdfCamera{
 							instructions[2],																			// name
 							stof(instructions[3]),																		// angle
-							{ stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) },					// position
+							{ stof(instructions[4]), stof(instructions[5]), stof(instructions[6])},					// position
 							{ stof(instructions[7]), stof(instructions[8]), stof(instructions[9]) },					// direction
 							{ stof(instructions[10]), stof(instructions[11]), stof(instructions[12]) },					// up
 							800,																						// resolutionV

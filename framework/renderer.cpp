@@ -37,7 +37,7 @@ void Renderer::render(Scene const& scene, Camera const& camera)
           p.color = color{ 1.0f, 0.0f, float(y) / width_ };
 
       }*/
-      p.color = raytrace(make_cam_ray(p, camera, camera.dist()), scene, 0);
+      p.color = raytrace(make_cam_ray(p, camera, camera.dist()), scene, 1);
       write(p);
     }
   }
@@ -59,7 +59,7 @@ void Renderer::write(Pixel const& p)
   ppm_.write(p);
 }
 
-Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
+Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion){
     Color finalShade{
         shadePoint.mat->ka.r * sdfScene.baseLighting.r,
         shadePoint.mat->ka.g * sdfScene.baseLighting.g,
@@ -95,14 +95,14 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
     }
 
     vec3 norm = glm::normalize(shadePoint.normal);
-    vec3 srdnorm = shadowRay.direction;
+    vec3 srdnorm = glm::normalize(shadowRay.direction);
     float angle = glm::dot(srdnorm, norm);
     angle = std::max(angle, 0.f);
 
     vec3 reflectVec = (2 * angle * shadePoint.normal) - shadowRay.direction;
     vec3 rnormed = glm::normalize(reflectVec);
     vec3 vnormed = glm::normalize(-shadePoint.touchPoint);
-    float angle1 = glm::dot(rnormed, vnormed);    
+    float angle1 = glm::dot(rnormed, vnormed);
 
     // Phong illumination
     finalShade.r += (totalLuminance * totalHue.r) * ((shadePoint.mat->kd.r * angle)) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent);
@@ -120,6 +120,7 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion) {
 
 Color raytrace(Ray const& ray, Scene const& sdfScene, int recursion) {
     bool reflect = false;
+    float smollDis = INFINITY;
     HitPoint temp;
     HitPoint minHit;
     Color finalShade{ sdfScene.baseLighting };
@@ -127,6 +128,7 @@ Color raytrace(Ray const& ray, Scene const& sdfScene, int recursion) {
     for (const auto& [name, shape] : sdfScene.sceneElements) {
         temp = shape->intersect(ray);
         if (temp.dist < minHit.dist && temp.hit) {
+            smollDis = temp.dist;
             minHit = temp;
         }
     }
@@ -147,10 +149,11 @@ Color raytrace(Ray const& ray, Scene const& sdfScene, int recursion) {
             finalShade.b += minHit.mat->reflectivity * reflectedColor.b;
         }
         return finalShade;
-        
+
     }
-    else
-    return finalShade;
+    else {
+        return finalShade;
+    }
 }
 
 Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {

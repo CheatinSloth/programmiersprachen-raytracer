@@ -63,6 +63,7 @@ public:
 
     float const area() override;
     float const volume() override;
+    bool const inBox(glm::vec3);
     std::ostream& print(std::ostream& os) const override;
     HitPoint const intersect(Ray const& ray) override;
 

@@ -134,104 +134,96 @@ float const Box::volume()
     return h*w*l;
 }
 
+bool const Box::inBox(glm::vec3 point){
+
+    float offset = 0.0001f;
+
+    if (point.x + offset >= min_.x && point.x - offset <= max_.x && point.y + offset >= min_.y && point.y - offset <= max_.y && point.z + offset >= min_.z && point.z - offset <= max_.z) {
+        return true;
+    }
+    return false;
+}
+
 HitPoint const Box::intersect(Ray const& r) {
 
-    Ray rayTrans{ transformRay(world_transformation_inv_, r) };
+    glm::vec3 raynorm = glm::normalize(r.direction);
+    bool hit = false;
+    Ray rayTrans{transformRay(world_transformation_inv_, r)};
     float shortest_dis = INFINITY;
-    float distances[6];
     float t;
+    vec3 sideNorm{0.f, 0.f, 0.f};     // Creates normal vector for orthogonal boxes
+
 
     // left
     float x_min = min_.x;
-    t = (x_min - r.origin.x) / r.direction.x;
-    glm::vec3 point_x_min = r.origin + t * r.direction;
+    t = (x_min - r.origin.x) / raynorm.x;
+    glm::vec3 point_x_min = r.origin + t * raynorm;
     glm::vec3 vec = point_x_min - r.origin;
-    distances[0] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+    if(inBox(point_x_min) && glm::length(vec)<shortest_dis){
+        shortest_dis = glm::length(vec);
+        sideNorm = {-1.f, 0.f, 0.f};
+    }
 
     // right
     float x_max = max_.x;
-    t = (x_max - r.origin.x) / r.direction.x;
-    glm::vec3 point_x_max = r.origin + t * r.direction;
+    t = (x_max - r.origin.x) / raynorm.x;
+    glm::vec3 point_x_max = r.origin + t * raynorm;
     vec = point_x_max - r.origin;
-    distances[1] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+    if(inBox(point_x_max) && glm::length(vec)<shortest_dis){
+        shortest_dis = glm::length(vec);
+        sideNorm = {1.f, 0.f, 0.f};
+    }
+
+
 
     // bottom
     float y_min = min_.y;
-    t = (y_min - r.origin.y) / r.direction.y;
-    glm::vec3 point_y_min = r.origin + t * r.direction;
+    t = (y_min - r.origin.y) / raynorm.y;
+    glm::vec3 point_y_min = r.origin + t * raynorm;
     vec = point_y_min - r.origin;
-    distances[2] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+    if(inBox(point_y_min) && glm::length(vec)<shortest_dis){
+        shortest_dis = glm::length(vec);
+        sideNorm = {0.f, -1.f, 0.f};
+    }
+
+
 
     // top
     float y_max = max_.y;
-    t = (y_max - r.origin.y) / r.direction.y;
-    glm::vec3 point_y_max = r.origin + t * r.direction;
+    t = (y_max - r.origin.y) / raynorm.y;
+    glm::vec3 point_y_max = r.origin + t * raynorm;
     vec = point_y_max - r.origin;
-    distances[3] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+    if(inBox(point_y_max) && glm::length(vec)<shortest_dis){
+        shortest_dis = glm::length(vec);
+        sideNorm = {0.f, 1.f, 0.f};
+    }
 
     // back (in -z)
     float z_min = min_.z;
-    t = (z_min - r.origin.z) / r.direction.z;
-    glm::vec3 point_z_min = r.origin + t * r.direction;
+    t = (z_min - r.origin.z) / raynorm.z;
+    glm::vec3 point_z_min = r.origin + t * raynorm;
     vec = point_z_min - r.origin;
-    distances[4] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
+    if(inBox(point_z_min) && glm::length(vec)<shortest_dis){
+        shortest_dis = glm::length(vec);
+        sideNorm = {0.f, 0.f, -1.f};
+    }
 
     // front (in -z)
     float z_max = max_.z;
-    t = (z_max - r.origin.z) / r.direction.z;
-    glm::vec3 point_z_max = r.origin + t * r.direction;
+    t = (z_max - r.origin.z) / raynorm.z;
+    glm::vec3 point_z_max = r.origin + t * raynorm;
     vec = point_z_max - r.origin;
-    distances[5] = sqrt(pow(vec.x,2)+pow(vec.y,2)+pow(vec.z,2));
-
-    int side = -1;
-
-    for (int i = 0; i<=5; i++){
-        if(distances[i]<shortest_dis){
-            if(distances[i]!=0) {
-                shortest_dis = distances[i];
-                side = i;
-            }
-        }
+    if(inBox(point_z_max) && glm::length(vec)<shortest_dis){
+        shortest_dis = glm::length(vec);
+        sideNorm = {0.f, 0.f, 1.f};
     }
 
-    // Creates normal vector for orthogonal boxes
-    vec3 sideNorm{ 0.f, 0.f, 0.f };
-    switch (side)
-    {
-    default: // should never apply
-        break;
-    case -1: // no hit
-        break;
-    case 0: // left
-        sideNorm = { -1.f, 0.f, 0.f };
-    case 1: // right
-        sideNorm = { 1.f, 0.f, 0.f };
-    case 2: // bottom
-        sideNorm = { 0.f, -1.0f, 0.0f };
-    case 3: // top
-        sideNorm = { 0.0f, 1.0f, 0.f };
-    case 4: // back
-        sideNorm = { 0.f, 0.f, 1.f };
-    case 5: // front
-        sideNorm = { 0.f, 0.f, -1.f };
-    }
-
-    t = shortest_dis;
-    vec3 point = (r.origin + t * r.direction ) - 0.0001f;
+    vec3 point = (r.origin + shortest_dis * raynorm) + 0.0001f*sideNorm;
     vec3 normalTrans{r.origin + t * rayTrans.direction};
 
-    if (point.y >= min_.y && point.y <= max_.y) {
-        if (point.z >= min_.z && point.z <= max_.z) {
 
-            return HitPoint{true, t, name_, mat_, point, glm::normalize(r.direction), sideNorm};
-        } else {
-            return HitPoint{};
-        }
-    } else {
-        return HitPoint{};
-    }
-
- }
+    return HitPoint{shortest_dis!=INFINITY, shortest_dis, name_, mat_, point, raynorm, sideNorm};
+}
 
 Ray transformRay(glm::mat4 const& mat, Ray const& ray)
 {
