@@ -18,6 +18,7 @@
 #include "shape.hpp"
 #include <string>
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 #include <math.h>
 #include "camera.hpp"
 
@@ -42,8 +43,8 @@ private:
   PpmWriter ppm_;
 };
 
-Color shade(HitPoint& shadePoint, Scene const& sdfScene, int recursion);
-Color raytrace(Ray const& ray, Scene const& sdfScene, int recursion);
+Color shade(HitPoint& shadePoint, Scene const& sdfScene,  Camera const& cam, int recursion);
+Color raytrace(Ray const& ray, Scene const& sdfScene, Camera const& cam, int recursion);
 
 // Transformations 
 mat4 translate_vec(vec3 const& translation);

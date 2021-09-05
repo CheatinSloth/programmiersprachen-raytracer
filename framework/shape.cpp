@@ -168,7 +168,7 @@ HitPoint const Box::intersect(Ray const& r) {
     t = (x_min - r.origin.x) / raynorm.x;
     glm::vec3 point_x_min = r.origin + t * raynorm;
     glm::vec3 vec = point_x_min - r.origin;
-    if ( inBox(point_x_min) && glm::length(vec) < shortest_dis ){
+    if ( t > 0 && inBox(point_x_min) && glm::length(vec) < shortest_dis ){
         shortest_dis = glm::length(vec);
         sideNorm = {-1.f, 0.f, 0.f};
     }
@@ -178,7 +178,7 @@ HitPoint const Box::intersect(Ray const& r) {
     t = (x_max - r.origin.x) / raynorm.x;
     glm::vec3 point_x_max = r.origin + t * raynorm;
     vec = point_x_max - r.origin;
-    if ( inBox(point_x_max) && glm::length(vec) < shortest_dis ){
+    if (t > 0 && inBox(point_x_max) && glm::length(vec) < shortest_dis ){
         shortest_dis = glm::length(vec);
         sideNorm = {1.f, 0.f, 0.f};
     }
@@ -188,7 +188,7 @@ HitPoint const Box::intersect(Ray const& r) {
     t = (y_min - r.origin.y) / raynorm.y;
     glm::vec3 point_y_min = r.origin + t * raynorm;
     vec = point_y_min - r.origin;
-    if ( inBox(point_y_min) && glm::length(vec) < shortest_dis ){
+    if (t > 0 && inBox(point_y_min) && glm::length(vec) < shortest_dis ){
         shortest_dis = glm::length(vec);
         sideNorm = {0.f, -1.f, 0.f};
     }
@@ -198,7 +198,7 @@ HitPoint const Box::intersect(Ray const& r) {
     t = (y_max - r.origin.y) / raynorm.y;
     glm::vec3 point_y_max = r.origin + t * raynorm;
     vec = point_y_max - r.origin;
-    if ( inBox(point_y_max) && glm::length(vec) < shortest_dis ){
+    if (t > 0 && inBox(point_y_max) && glm::length(vec) < shortest_dis ){
         shortest_dis = glm::length(vec);
         sideNorm = {0.f, 1.f, 0.f};
     }
@@ -208,7 +208,7 @@ HitPoint const Box::intersect(Ray const& r) {
     t = (z_min - r.origin.z) / raynorm.z;
     glm::vec3 point_z_min = r.origin + t * raynorm;
     vec = point_z_min - r.origin;
-    if(inBox(point_z_min) && glm::length(vec)<shortest_dis){
+    if(t > 0 && inBox(point_z_min) && glm::length(vec) < shortest_dis){
         shortest_dis = glm::length(vec);
         sideNorm = {0.f, 0.f, -1.f};
     }
@@ -218,7 +218,7 @@ HitPoint const Box::intersect(Ray const& r) {
     t = (z_max - r.origin.z) / raynorm.z;
     glm::vec3 point_z_max = r.origin + t * raynorm;
     vec = point_z_max - r.origin;
-    if ( inBox(point_z_max) && glm::length(vec) < shortest_dis ){
+    if (t > 0 && inBox(point_z_max) && glm::length(vec) < shortest_dis ){
         shortest_dis = glm::length(vec);
         sideNorm = {0.f, 0.f, 1.f};
     }
