@@ -90,7 +90,7 @@ HitPoint const Sphere::intersect(Ray const& r)
         vec3 distanceVec = hitpoint - rayTrans.origin;
         t = sqrt(pow(distanceVec.x, 2) + pow(distanceVec.y, 2) + pow(distanceVec.z, 2));
 
-        vec3 normalVec{hitpoint - center_};
+        vec3 normalVec{(hitpoint - center_)};
 
         mat4 transp = glm::transpose(world_transformation_inv_);
         vec3 normalTrans(transp * glm::vec4{ normalVec.x, normalVec.y, normalVec.z, 0.f });
@@ -109,9 +109,8 @@ max_ { 20.0f, 20.0f, 20.0f } {}
 
 Box::Box(vec3 const& min, vec3 const& max) :
 Shape(),
-// smallest coordinate tuple | in -z: (bottom left corner furthest from viewer)
+
 min_{ min },
-// largest coordinate tuple | in -z: (top left corner closest to viewer)
 max_ { max }{}
 
 Box::Box(vec3 const& min, vec3 const& max, std::shared_ptr<Material> const& mats) :
@@ -211,7 +210,7 @@ HitPoint const Box::intersect(Ray const& r) {
     vec = point_z_min - r.origin;
     if(inBox(point_z_min) && glm::length(vec)<shortest_dis){
         shortest_dis = glm::length(vec);
-        sideNorm = {0.f, 0.f, 1.f};
+        sideNorm = {0.f, 0.f, -1.f};
     }
 
     // front (in -z)
@@ -221,7 +220,7 @@ HitPoint const Box::intersect(Ray const& r) {
     vec = point_z_max - r.origin;
     if ( inBox(point_z_max) && glm::length(vec) < shortest_dis ){
         shortest_dis = glm::length(vec);
-        sideNorm = {0.f, 0.f, -1.f};
+        sideNorm = {0.f, 0.f, 1.f};
     }
 
     vec3 point = (r.origin + shortest_dis * raynorm) + 0.0001f * sideNorm;
