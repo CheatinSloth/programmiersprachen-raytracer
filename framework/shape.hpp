@@ -24,18 +24,22 @@ public:
     virtual float const volume() = 0;
     virtual std::ostream& print(std::ostream& os) const;
     virtual HitPoint const intersect(Ray const& ray) = 0;
-    void set_world_mat(mat4 worldMat);
+    void set_world_mat();
     void set_world_inv();
+    void set_transMat(mat4 matrix);
+    void set_rotMat(mat4 matrix);
+    void set_scaleMat(mat4 matrix);
+
 	
 protected: 
     string name_;
     std::shared_ptr<Material> mat_;
-    mat4 world_transformation_{ 1.0f, 0.f, 0.f, 0.f,
-                                0.0f, 1.f, 0.f, 0.f,
-                                0.0f, 0.f, 1.f, 0.f,
-                                0.0f, 0.f, 0.f, 1.f 
-    };
+    mat4 world_transformation_;
     mat4 world_transformation_inv_{glm::inverse(world_transformation_)};
+    mat4 transMat;
+    mat4 rotMat;
+    mat4 scaleMat;
+
 };
 
 class Sphere : public Shape {

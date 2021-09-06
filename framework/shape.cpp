@@ -23,14 +23,26 @@ std::ostream& Shape::print(std::ostream& os) const
     return os;
 }
 
-void Shape::set_world_mat(mat4 worldMat)
+void Shape::set_world_mat()
 {
-    world_transformation_ = worldMat;
+    world_transformation_ = transMat * rotMat * scaleMat;
 }
 
 void Shape::set_world_inv()
 {
     world_transformation_inv_ = glm::inverse(world_transformation_);
+}
+
+void Shape::set_transMat(mat4 matrix){
+    transMat = matrix;
+}
+
+void Shape::set_rotMat(mat4 matrix) {
+    rotMat = matrix;
+}
+
+void Shape::set_scaleMat(mat4 matrix) {
+    scaleMat = matrix;
 }
 
 Sphere::Sphere() :
@@ -153,11 +165,12 @@ bool const Box::inBox(glm::vec3 point){
     return false;
 }
 
-HitPoint const Box::intersect(Ray const& r) {
+HitPoint const Box::intersect(Ray const& ray) {
 
+    Ray r{transformRay(world_transformation_inv_, ray)};
+    r.direction = glm::normalize(r.direction);
     glm::vec3 raynorm = glm::normalize(r.direction);
-    bool hit = false;
-    Ray rayTrans{transformRay(world_transformation_inv_, r)};
+
     float shortest_dis = INFINITY;
     float t;
     vec3 sideNorm{0.f, 0.f, 0.f};     // Creates normal vector for orthogonal boxes
@@ -224,7 +237,7 @@ HitPoint const Box::intersect(Ray const& r) {
     }
 
     vec3 point = (r.origin + shortest_dis * raynorm) + 0.0001f * sideNorm;
-    vec3 normalTrans{r.origin + t * rayTrans.direction};
+    vec3 normalTrans{r.origin + t * r.direction};
 
 
     return HitPoint{shortest_dis!=INFINITY, shortest_dis, name_, mat_, point, raynorm, sideNorm};
@@ -235,8 +248,8 @@ Ray transformRay(glm::mat4 const& mat, Ray const& ray)
     glm::vec4 origin{ ray.origin, 1.f };
     glm::vec4 direction{ ray.direction, 0.f };
 
-    vec3 transOrigin{ origin * mat };
-    vec3 transDirection{ direction * mat };
+    vec3 transOrigin{ mat * origin };
+    vec3 transDirection{ mat * direction };
 
     return Ray{ transOrigin, transDirection };
 }

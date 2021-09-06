@@ -154,21 +154,23 @@ void parse(string const& fileName, Scene& sdfScene, Renderer& renderer) {
 				if (instructions.size() != 6) {
 					cout << "Incorrect instruction syntax. Transformation scale requires 6 tokens." << endl;
 				}
-				sdfScene.sceneElements.at(instructions[1])->set_world_mat(scale_vec({ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) }));
+                sdfScene.sceneElements.at(instructions[1])->set_scaleMat(scale_vec({ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) }));
 
 			}
 			if (instructions[2] == "translate") {
 				if (instructions.size() != 6) {
 					cout << "Incorrect instruction syntax. Transformation translate requires 6 tokens." << endl;
 				}
-				sdfScene.sceneElements.at(instructions[1])->set_world_mat(translate_vec({ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) }));
+                sdfScene.sceneElements.at(instructions[1])->set_transMat(translate_vec({ stof(instructions[3]), stof(instructions[4]), stof(instructions[5]) }));
 			}
 			if (instructions[2] == "rotate") {
 				if (instructions.size() != 7) {
 					cout << "Incorrect instruction syntax. Transformation rotate requires 7 tokens." << endl;
 				}
-				sdfScene.sceneElements.at(instructions[1])->set_world_mat(rotate_vec(stof(instructions[3]), { stof(instructions[4]), stof(instructions[5]), stof(instructions[6])}));
+                sdfScene.sceneElements.at(instructions[1])->set_rotMat(rotate_vec(stof(instructions[3]) ,{stof(instructions[4]), stof(instructions[5]), stof(instructions[6]) }));
 			}
+            sdfScene.sceneElements.at(instructions[1])->set_world_mat();
+            sdfScene.sceneElements.at(instructions[1])->set_world_inv();
 			}
 		
 			else if (instructions[0] == "render") {
