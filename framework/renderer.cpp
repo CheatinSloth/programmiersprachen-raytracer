@@ -106,18 +106,13 @@ Color shade(HitPoint& shadePoint, Scene const& sdfScene, Camera const& cam, int 
 
 
 
+
             // Phong illumination
             finalShade.r += ((light.luminance + 1) * light.hue.r * sdfScene.baseLighting.r) * (((shadePoint.mat->kd.r * angle)) + shadePoint.mat->ks.r * pow(angle1, shadePoint.mat->reflectionExponent));
             finalShade.g += ((light.luminance + 1) * light.hue.g * sdfScene.baseLighting.g) * (((shadePoint.mat->kd.g * angle)) + shadePoint.mat->ks.g * pow(angle1, shadePoint.mat->reflectionExponent));
             finalShade.b += ((light.luminance + 1) * light.hue.b * sdfScene.baseLighting.b) * (((shadePoint.mat->kd.b * angle)) + shadePoint.mat->ks.b * pow(angle1, shadePoint.mat->reflectionExponent));
         }
-    }    
-
-    // HDR Color correcting
-    finalShade.r = finalShade.r / (finalShade.r + 1.f);
-    finalShade.g = finalShade.g / (finalShade.g + 1.f);
-    finalShade.b = finalShade.b / (finalShade.b + 1.f);
-
+    }
     return finalShade;
 }
 
@@ -136,7 +131,7 @@ Color raytrace(Ray const& ray, Scene const& sdfScene, Camera const& cam, int rec
         }
     }
 
-    minHit.touchPoint += 0.0001f;
+    // minHit.touchPoint += 0.0001f;
 
     if (minHit.hit) {
         finalShade = shade(minHit, sdfScene, cam, recursion);
@@ -144,19 +139,20 @@ Color raytrace(Ray const& ray, Scene const& sdfScene, Camera const& cam, int rec
         if (minHit.mat->reflectivity > 0.f && recursion <= 10) {
             vec3 toCam = glm::normalize(-minHit.touchPoint);
             float cosine = glm::dot(toCam, minHit.normal);
-            vec3 direction = toCam - (minHit.normal * cosine * 2.f);
+            vec3 direction = (minHit.normal * cosine * 2.f) - toCam;
             Color reflectedColor = raytrace({ minHit.touchPoint, direction }, sdfScene, cam, recursion + 1);
 
-            finalShade.r += minHit.mat->reflectivity * reflectedColor.r;
-            finalShade.g += minHit.mat->reflectivity * reflectedColor.g;
-            finalShade.b += minHit.mat->reflectivity * reflectedColor.b;
+            finalShade.r += reflectedColor.r * minHit.mat->reflectivity;
+            finalShade.g += reflectedColor.g * minHit.mat->reflectivity;
+            finalShade.b += reflectedColor.b * minHit.mat->reflectivity;
         }
-        return finalShade;
+    }
+    // HDR Color correcting
+    finalShade.r = finalShade.r / (finalShade.r + 1.f);
+    finalShade.g = finalShade.g / (finalShade.g + 1.f);
+    finalShade.b = finalShade.b / (finalShade.b + 1.f);
 
-    }
-    else {
-        return finalShade;
-    }
+    return finalShade;
 }
 
 Ray Renderer::make_cam_ray(Pixel const& p, Camera const& camera, float distance) {
