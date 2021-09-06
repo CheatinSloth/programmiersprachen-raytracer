@@ -34,8 +34,8 @@ public:
 protected: 
     string name_;
     std::shared_ptr<Material> mat_;
-    mat4 world_transformation_;
-    mat4 world_transformation_inv_{glm::inverse(world_transformation_)};
+    mat4 world_transformation_{ glm::mat4(1.f) };
+    mat4 world_transformation_inv_{glm::mat4(1.f)};
     mat4 transMat;
     mat4 rotMat;
     mat4 scaleMat;
