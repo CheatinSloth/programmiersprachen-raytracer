@@ -240,8 +240,9 @@ void transormSDF(int frame){
 //now single threaded again
 int main(int argc, char* argv[]) {
    for (int frame = 0; frame<=120; frame++){
-        unsigned const image_width = 1100;
-        unsigned const image_height = 850;
+
+        unsigned const image_width = 2100;
+        unsigned const image_height = 1400;
         string const filename = "./subdir/Steve" + std::to_string(frame) + ".ppm";
 
 
